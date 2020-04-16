@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.pc.selectCombox.dao.SelectComboxDao">
+
+    <!--查询地区下拉窗口-->
+    <select id="listArea" parameterType="java.lang.String" resultType="com.xzsd.pc.selectCombox.entity.AreaInfo">
+        SELECT
+            area_id areaId,
+            area_name areaName
+        FROM
+            t_info_area_level
+        WHERE
+            is_delete = 0
+            AND parent_area = #{areaId}
+            ORDER BY create_time DESC
+    </select>
+
+</mapper>

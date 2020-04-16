@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.pc.order.dao.OrderDao">
+
+    <!--查询订单详情-->
+    <select id="getListOrder" parameterType="java.lang.String" resultType="com.xzsd.pc.order.entity.OrderDeepen">
+        SELECT
+            a.user_id userId,
+            a.order_id orderId,
+            c.goods_id goodsId,
+            c.goods_name goodsName,
+            b.goods_count goodsCount,
+            b.the_goods_all_price theGoodsAllPrice,
+            c.goods_price goodsPrice,
+            c.goods_original_cost goodsShelfCost
+        FROM
+            t_info_order a
+            LEFT JOIN t_info_order_deepen b ON a.order_id = #{orderId}
+            AND a.order_id = b.order_id
+            AND a.is_delete = 0
+            LEFT JOIN t_info_goods c ON b.goods_id = c.goods_id
+    </select>
+
+    <!--分页查询订单列表-->
+    <select id="listOrdersByPage" parameterType="com.xzsd.pc.order.entity.Order" resultType="com.xzsd.pc.order.entity.Order">
+        SELECT
+        a.order_id orderId,
+        a.order_all_cost orderAllCost,
+        a.order_state_id orderStateId,
+        a.store_id storeId,
+        a.user_name userName,
+        a.phone phone,
+        a.version version,
+        a.pay_time payTime
+    FROM
+        t_info_order a
+    WHERE
+        a.is_delete = 0
+    <if test="role == 2">
+        AND a.user_id = #{nowLogin}
+    </if>
+    <if test="o.userName != null and o.userName != '' ">
+        AND a.user_name LIKE concat('%', #{o.userName}, '%')
+    </if>
+    <if test="o.phone != null and o.phone != '' ">
+        AND a.phone LIKE concat('%', #{o.phone}, '%')
+    </if>
+    <if test="o.orderId != null and o.orderId != '' ">
+        AND a.order_id LIKE  concat('%', #{o.orderId}, '%')
+    </if>
+    <if test="o.orderStateId != null and o.orderStateId != '' ">
+        AND a.order_state_id LIKE  concat('%', #{o.orderStateId}, '%')
+    </if>
+    <if test="payTimeEnd != null and payTimeEnd != '' ">
+        AND a.pay_time <![CDATA[ >= ]]> #{payTimeStart}
+    </if>
+    <if test="payTimeStart != null and payTimeStart != '' ">
+        AND a.pay_time <![CDATA[ <= ]]> #{payTimeEnd}
+    </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <!--修改订单状态-->
+    <update id="updateOrderState" parameterType="java.util.List">
+        <foreach collection="updateOrderList" item="item" index="index" open="" separator=";" close=";">
+            UPDATE t_info_order
+            <set>
+                order_state_id = #{item.orderStateId,jdbcType=VARCHAR},
+                update_time = NOW(),
+                update_user = #{item.updateUser,jdbcType=VARCHAR},
+                version = version + 1
+            </set>
+            <where>
+                order_id = #{item.orderId}
+                AND version = #{item.version,jdbcType=VARCHAR}
+            </where>
+        </foreach>
+    </update>
+</mapper>

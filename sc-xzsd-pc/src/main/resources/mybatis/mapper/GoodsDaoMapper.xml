@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.pc.goods.dao.GoodsDao">
+
+    <!--查询商品分类下拉框-->
+    <select id="listGoodsClassify" parameterType="java.lang.String" resultType="com.xzsd.pc.goodsClassify.entity.GoodsClassify">
+        SELECT
+            classify_id classifyId,
+            classify_name classifyName
+        FROM
+            t_info_goods_classify
+        WHERE
+            is_delete = 0
+            AND classify_parent = #{classifyId}
+    </select>
+
+    <!--查询书号是否存在-->
+    <select id="countIsbn" parameterType="com.xzsd.pc.goods.entity.Goods" resultType="int">
+        SELECT
+            COUNT( isbn )
+        FROM
+            t_info_goods
+        WHERE
+            is_delete = 0
+            AND isbn = #{isbn}
+        <if test=" goodsId != null and goodsId != '' " >
+            AND goods_id != #{goodsId}
+        </if>
+    </select>
+
+    <!--新增商品-->
+    <insert id="addGoods" parameterType="com.xzsd.pc.goods.entity.Goods" >
+        INSERT INTO t_info_goods
+       (goods_id,
+        goods_name,
+        isbn,
+        one_classify_id,
+        two_classify_id,
+        goods_describe,
+        supplier_name,
+        goods_inventory,
+        goods_original_cost,
+        goods_price,
+        goods_advertise,
+        goods_image_path,
+        goods_author,
+        goods_press,
+        goods_sales,
+        goods_state_id,
+        goods_views_num,
+        is_delete,
+        create_time,
+        create_user,
+        update_time,
+        update_user,
+        version )
+        VALUES
+           (#{goodsId},
+            #{goodsName},
+            #{isbn},
+            #{oneClassifyId},
+            #{twoClassifyId},
+            #{goodsDescribe},
+            #{supplierName},
+            #{goodsInventory},
+            #{goodsOriginalCost},
+            #{goodsPrice},
+            #{goodsAdvertise},
+            #{goodsImagePath},
+            #{goodsAuthor},
+            #{goodsPress},
+            0,
+            0,
+            0,
+            0,
+            NOW(),
+            #{createUser},
+            NOW(),
+            #{createUser},
+            0 )
+    </insert>
+
+    <!--查询商品详情-->
+    <select id="getGoods" parameterType="java.lang.String" resultType="com.xzsd.pc.goods.entity.Goods">
+        SELECT
+            a.goods_id goodsId,
+            a.goods_name goodsName,
+            a.isbn,
+            a.one_classify_id oneClassifyId,
+            b.classify_name oneClassifyName,
+            a.two_classify_id twoClassifyId,
+            c.classify_name twoClassifyName,
+            a.goods_describe goodsDescribe,
+            a.supplier_name supplierName,
+            a.goods_inventory goodsInventory,
+            a.goods_original_cost goodsOriginalCost,
+            a.goods_price goodsPrice,
+            a.goods_advertise goodsAdvertise,
+            a.goods_image_path goodsImagePath,
+            a.goods_author goodsAuthor,
+            a.goods_press goodsPress,
+            a.version
+        FROM
+            t_info_goods a
+            LEFT JOIN t_info_goods_classify b ON a.one_classify_id = b.classify_id
+            LEFT JOIN t_info_goods_classify c ON a.two_classify_id = c.classify_id
+            HAVING a.goods_id = #{goodsId}
+    </select>
+
+    <!--分页查询商品-->
+    <select id="listGoodsByPage" parameterType="com.xzsd.pc.goods.entity.Goods" resultType="com.xzsd.pc.goods.entity.Goods">
+        SELECT
+            a.goods_name goodsName,
+            a.goods_original_cost goodsOriginalCost,
+            a.goods_price goodsPrice,
+            a.goods_sales goodsSales,
+            b.classify_name oneClassifyName,
+            c.classify_name twoClassifyName,
+            a.goods_advertise goodsAdvertise,
+            a.goods_describe goodsDescribe,
+            a.goods_shelf_time goodsShelfTime,
+            a.goods_state_id goodsStateId,
+            a.supplier_name supplierName,
+            a.goods_image_path goodsImagePath,
+            a.goods_inventory goodsInventory,
+            a.isbn,
+            a.goods_id goodsId,
+            a.version
+        FROM
+            t_info_goods a
+            LEFT JOIN t_info_goods_classify b ON a.one_classify_id = b.classify_id
+            LEFT JOIN t_info_goods_classify c ON a.two_classify_id = c.classify_id
+        WHERE
+            a.is_delete = 0
+        <if test="goodsName != null and '' != goodsName">
+            AND a.goods_name LIKE concat('%', #{goodsName}, '%')
+        </if>
+        <if test="goodsStateId != null and '' != goodsStateId">
+            AND a.goods_state_id = #{goodsStateId}
+        </if>
+        <if test="goodsAdvertise != null and '' != goodsAdvertise">
+            AND a.goods_advertise LIKE concat('%', #{goodsAdvertise}, '%')
+        </if>
+        <if test="goodsAuthor != null and '' != goodsAuthor">
+            AND a.goods_author LIKE concat('%', #{goodsAuthor}, '%')
+        </if>
+        <if test="goodsPress != null and '' != goodsPress">
+            AND a.goods_press LIKE concat('%', #{goodsPress}, '%')
+        </if>
+        ORDER BY a.create_time DESC
+    </select>
+
+    <!--修改商品信息-->
+    <update id="updateGoods" parameterType="com.xzsd.pc.goods.entity.Goods">
+        UPDATE t_info_goods
+        SET
+            goods_name = #{goodsName},
+            isbn = #{isbn},
+            one_classify_Id = #{oneClassifyId},
+            two_classify_Id = #{twoClassifyId},
+            goods_describe = #{goodsDescribe},
+            supplier_name = #{supplierName},
+            goods_inventory = #{goodsInventory},
+            goods_original_cost = #{goodsOriginalCost},
+            goods_price = #{goodsPrice},
+            goods_advertise = #{goodsAdvertise},
+            goods_image_path = #{goodsImagePath},
+            goods_author = #{goodsAuthor},
+            goods_press = #{goodsPress},
+            update_time = NOW(),
+            update_user = #{updateUser},
+            version = version + 1
+        WHERE
+            goods_id = #{goodsId}
+            AND version = #{version}
+    </update>
+
+    <!--修改商品状态信息-->
+    <update id="updateGoodsState" parameterType="java.util.List">
+        <foreach collection="listUpdate" item="item" index="index" open="" separator=";" close=";" >
+            UPDATE t_info_goods
+            <set>
+                goods_state_id = #{item.goodsStateId},
+                update_time = NOW(),
+                <if test="item.goodsStateId == 1">
+                    goods_shelf_time = update_time,
+                </if>
+                <if test="item.goodsStateId != 1">
+                    goods_shelf_time = null,
+                </if>
+                update_user = #{item.updateUser,jdbcType=VARCHAR},
+                version = version + 1
+            </set>
+            <where>
+                goods_id = #{item.goodsId,jdbcType=VARCHAR}
+                AND version = #{item.version}
+            </where>
+        </foreach>
+
+        <!--        UPDATE t_info_goods-->
+        <!--        SET-->
+        <!--            goods_state_id = #{goodsStateId},-->
+        <!--            update_time = NOW(),-->
+        <!--            update_user = #{updateUser},-->
+        <!--            version = version + 1-->
+        <!--        WHERE-->
+        <!--            goods_id IN-->
+        <!--        <foreach item="item" index="index" collection="listGoodsId" open="(" separator="," close=")">-->
+        <!--            #{item}-->
+        <!--        </foreach>-->
+        <!--            AND version IN-->
+        <!--        <foreach item="item" index="index" collection="listVersion" open="(" separator="," close=")">-->
+        <!--            #{item}-->
+        <!--        </foreach>-->
+    </update>
+
+    <!--删除商品-->
+    <update id="deleteGoods" parameterType="java.lang.String" >
+        UPDATE t_info_goods
+        SET
+            is_delete = 1
+        WHERE
+            goods_id IN
+            <foreach collection="listGoodsId" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+
+</mapper>

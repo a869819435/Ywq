@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.pc.hotGoods.dao.HotGoodsDao">
+
+    <!--检查商品编号是否存在-->
+    <select id="countGoodsId" parameterType="java.lang.String" resultType="int">
+        SELECT
+            COUNT(goods_id)
+        FROM
+            t_info_hot_goods
+        WHERE
+            is_delete = 0
+            AND goods_id = #{goodsId}
+        <if test="hotGoodsId != null and  hotGoodsId != '' ">
+            AND hot_goods_id != #{hotGoodsId}
+        </if>
+    </select>
+
+    <!--检查热门商品序号是否存在-->
+    <select id="countHotGoodsNum" parameterType="java.lang.String" resultType="int">
+        SELECT
+            COUNT(hot_goods_num)
+        FROM
+            t_info_hot_goods
+        WHERE
+            is_delete = 0
+            AND hot_goods_num = #{hotGoodsNum}
+        <if test="hotGoodsId != null and  hotGoodsId != '' ">
+            AND hot_goods_id != #{hotGoodsId}
+        </if>
+    </select>
+
+    <!--校验热门商品信息(编号、排序号)是否存在重复-->
+    <select id="countHotGoodsInfo" parameterType="com.xzsd.pc.hotGoods.entity.HotGoods" resultType="int">
+        SELECT
+            IF( COUNT(goods_id) != 0,1,0 ) +
+            IF( (SELECT COUNT(hot_goods_num) FROM t_info_hot_goods WHERE is_delete = 0 AND hot_goods_num = #{hotGoodsNum}
+                <if test="hotGoodsId != null and  hotGoodsId != '' ">
+                    AND hot_goods_id != #{hotGoodsId}
+                </if>) != 0,2,0 )
+        FROM
+            t_info_hot_goods
+        WHERE
+            is_delete = 0
+            AND goods_id = #{goodsId}
+        <if test="hotGoodsId != null and  hotGoodsId != '' ">
+            AND hot_goods_id != #{hotGoodsId}
+        </if>
+    </select>
+
+    <!--处理添加的热门商品编号-->
+    <update id="solveAddHotGoodsNum" parameterType="java.lang.String">
+        UPDATE
+            t_info_hot_goods
+        SET
+            hot_goods_num = hot_goods_num + 1
+        WHERE
+            is_delete = 0
+            AND hot_goods_num <![CDATA[ >= ]]> #{hotGoodsNum}
+            AND hot_goods_id != #{hotGoodsId}
+    </update>
+
+    <!--添加人热门商品-->
+    <insert id="addHotGoods" parameterType="com.xzsd.pc.hotGoods.entity.HotGoods">
+        INSERT INTO t_info_hot_goods
+            (goods_id,
+            hot_goods_num,
+            hot_goods_id,
+            is_delete,
+            create_time,
+            create_user,
+            update_time,
+            update_user,
+            version)
+        VALUES
+            (#{goodsId},
+            #{hotGoodsNum},
+            #{hotGoodsId},
+            0,
+            NOW(),
+            #{createUser},
+            NOW(),
+            #{createUser},
+            0)
+    </insert>
+
+    <!--获取热门商品详情-->
+    <select id="getHotGoods" parameterType="java.lang.String" resultType="com.xzsd.pc.hotGoods.entity.HotGoods">
+        SELECT
+            a.hot_goods_num hotGoodsNum,
+            b.goods_id goodsId,
+            b.goods_name goodsName,
+            a.hot_goods_id hotGoodsId,
+            a.version
+        FROM
+            t_info_hot_goods a
+            LEFT JOIN t_info_goods b ON a.is_delete = 0
+            AND b.goods_id = a.goods_id
+            HAVING a.hot_goods_id = #{hotGoodsId}
+    </select>
+
+    <!--分页查询热门商品信息-->
+    <select id="listHotGoodsByPage" parameterType="java.lang.String" resultType="com.xzsd.pc.hotGoods.entity.HotGoods">
+        SELECT
+            a.hot_goods_num hotGoodsNum,
+            b.goods_id goodsId,
+            b.goods_name goodsName,
+            b.goods_price goodsPrice,
+            b.goods_describe goodsDescribe,
+            a.hot_goods_id hotGoodsId,
+            a.version
+        FROM
+            t_info_hot_goods a
+            LEFT JOIN t_info_goods b ON a.goods_id = b.goods_id
+        WHERE
+            a.is_delete = 0
+        <if test="goodsId != null and goodsId != ''">
+            AND a.goods_id LIKE concat('%',#{goodsId},'%')
+        </if>
+        <if test="goodsName != null and goodsName != ''">
+            AND b.goods_name LIKE concat('%',#{goodsName},'%')
+        </if>
+            ORDER BY a.hot_goods_num,a.create_time DESC
+    </select>
+
+    <!--获取当前热门商品的序号-->
+    <select id="getHotGoodsNum" parameterType="java.lang.String" resultType="int">
+        SELECT
+            hot_goods_num oldHotGoodsNum
+        FROM
+            t_info_hot_goods
+        WHERE
+            hot_goods_id = #{hotGoodsId}
+    </select>
+
+    <!--处理修改的热门商品编号-->
+    <update id="solveUpdateHotGoodsNum" parameterType="java.lang.String">
+        UPDATE t_info_hot_goods
+        SET
+        <if test="oldHotGoodsNum lt hotGoodsNum" >
+            hot_goods_num = hot_goods_num - 1
+        </if>
+        <if test="oldHotGoodsNum gt hotGoodsNum" >
+            hot_goods_num = hot_goods_num + 1
+        </if>
+        WHERE
+            is_delete = 0
+            AND hot_goods_id != #{hotGoodsId}
+        <if test="oldHotGoodsNum lt hotGoodsNum" >
+            AND hot_goods_num <![CDATA[ <= ]]> #{hotGoodsNum}
+            AND hot_goods_num <![CDATA[ > ]]> #{oldHotGoodsNum}
+        </if>
+        <if test="oldHotGoodsNum gt hotGoodsNum" >
+            AND hot_goods_num <![CDATA[ < ]]> #{oldHotGoodsNum}
+            AND hot_goods_num <![CDATA[ >= ]]> #{hotGoodsNum}
+        </if>
+    </update>
+
+    <!--修改热门商品信息-->
+    <update id="updateHotGoods" parameterType="com.xzsd.pc.hotGoods.entity.HotGoods">
+        UPDATE t_info_hot_goods
+        SET
+            hot_goods_num = #{hotGoodsNum},
+            goods_id = #{goodsId},
+            update_time = NOW(),
+            update_user = #{updateUser},
+            version = version + 1
+        WHERE
+            is_delete = 0
+            AND hot_goods_id = #{hotGoodsId}
+            AND version = #{version}
+    </update>
+
+    <!--查询热门商品数量 myBatis有自动类型转化 convert(int,)-->
+    <select id="getHotGoodsShowNum" resultType="com.xzsd.pc.hotGoods.entity.HotGoodsShowNumVO">
+        SELECT
+            dict_value hotGoodsShowNum,
+            version
+        FROM
+            t_sys_dictionary
+        WHERE
+            id = 'hotGoodsShowNum'
+    </select>
+
+    <!--修改热门商品数量-->
+    <update id="updateHotGoodsShowNum" parameterType="java.lang.String">
+        UPDATE
+            t_sys_dictionary
+        SET
+            dict_value = #{hotGoodsShowNum},
+            update_user = #{updateUser},
+	        update_time = NOW(),
+            version = version + 1
+        WHERE
+            id = 'hotGoodsShowNum'
+    </update>
+
+    <!--删除热门商品-->
+    <update id="deleteHotGoods" parameterType="java.lang.String">
+        UPDATE t_info_hot_goods
+        SET
+            is_delete = 1,
+            update_user = #{updateUser},
+            update_time = NOW()
+        WHERE
+            hot_goods_id IN
+        <foreach collection="hotGoodsIdList" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+</mapper>

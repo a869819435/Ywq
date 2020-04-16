@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.pc.client.dao.ClientDao">
+
+    <!--分页查询客户信息-->
+    <select id="listClientsByPage" parameterType="java.lang.String" resultType="com.xzsd.pc.user.entity.User">
+        SELECT
+            b.user_acct userAcct,
+            b.user_name userName,
+            b.sex,
+            b.phone,
+            b.mail,
+            b.id_card idCard,
+            b.user_id userId
+        FROM
+            t_info_client a
+            LEFT JOIN t_sys_user b ON a.user_id = b.user_id
+            AND a.is_delete = 0
+        <if test="userName != null and userName != '' ">
+            AND user_name like concat('%', #{userName},'%')
+        </if>
+        <if test="userAcct != null and userAcct != '' ">
+            AND user_acct like concat('%', #{userAcct},'%')
+        </if>
+        <if test="role == 2">
+            LEFT JOIN t_info_store c ON a.invite_code = c.invite_code
+            AND c.is_delete = 0
+        WHERE
+            c.user_id = #{nowLogin}
+        </if>
+            ORDER BY a.create_time DESC
+    </select>
+
+</mapper>

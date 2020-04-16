@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.pc.menu.dao.MenuDao">
+    <!--查询菜单名列表-->
+    <select id="listMenu" resultType="com.xzsd.pc.menu.entity.Menu">
+        SELECT
+            menu_id menuId,
+            menu_name menuName,
+            version
+        FROM
+            t_sys_menu
+        WHERE
+            is_delete = 0
+            ORDER BY create_time
+    </select>
+
+    <!--根据角色查询首页菜单列表-->
+    <select id="listMenuHome" parameterType="java.lang.String" resultType="com.xzsd.pc.menu.entity.Menu">
+        SELECT
+            b.menu_id menuId,
+            b.menu_name menuName,
+            b.menu_comment menuComment
+        FROM
+            t_sys_menu_role a
+            LEFT JOIN t_sys_menu b ON a.is_delete = 0
+            AND a.menu_id = b.menu_id
+        WHERE
+            a.role = #{role}
+            ORDER BY a.create_time
+    </select>
+
+    <!--统计菜单名称数量-->
+    <select id="countMenuName" parameterType="com.xzsd.pc.menu.entity.Menu" resultType="int" >
+        SELECT
+            COUNT(menu_name)
+        FROM
+            t_sys_menu
+        WHERE
+            is_delete = 0
+            AND menu_name = #{menuName}
+            AND parent_menu = #{parentMenu}
+        <if test="menuId != null and menuId != '' ">
+            AND menu_id != #{menuId}
+        </if>
+    </select>
+
+    <!--新增菜单接口-->
+    <insert id="addMenu" parameterType="com.xzsd.pc.menu.entity.Menu" >
+        INSERT INTO t_sys_menu(
+            menu_id,
+            menu_name,
+            menu_path,
+            menu_comment,
+            is_menu,
+            parent_menu,
+            is_delete,
+            create_time,
+            create_user,
+            update_time,
+            update_user,
+            version
+        )VALUES(
+                #{menuId},
+                #{menuName},
+                #{menuPath},
+                #{menuComment},
+                #{isMenu},
+                #{parentMenu},
+                0,
+                NOW(),
+                #{createUser},
+                NOW(),
+                #{createUser},
+                0
+        )
+    </insert>
+
+    <!--查询菜单详情-->
+    <select id="getMenu" parameterType="java.lang.String" resultType="com.xzsd.pc.menu.entity.Menu">
+        SELECT
+            menu_name menuName,
+            menu_path menuPath,
+            menu_comment menuComment
+        FROM
+            t_sys_menu
+        WHERE
+            menu_id = #{menuId}
+    </select>
+
+    <!--修改菜单-->
+    <update id="updateMenu" parameterType="com.xzsd.pc.menu.entity.Menu">
+        UPDATE t_sys_menu
+        SET
+            menu_name = #{menuName},
+            menu_path = #{menuPath},
+            menu_comment = #{menuComment},
+            is_menu = #{isMenu},
+            parent_menu = #{parentMenu},
+            is_delete = 0,
+            update_time = NOW(),
+            update_user = #{updateUser},
+            version = version + 1
+        WHERE
+            menu_id = #{menuId}
+            AND version = #{version}
+    </update>
+
+    <!--删除菜单-->
+    <update id="deleteMenu" parameterType="java.lang.String">
+        UPDATE
+            t_sys_menu
+        SET
+            is_delete = 1,
+            update_time =NOW(),
+            update_user = #{updateUser}
+        WHERE
+            menu_id = #{menuId}
+    </update>
+</mapper>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.pc.slideshowHome.dao.SlideshowHomeDao">
+
+    <!--查询轮播图对应的商品是否存在-->
+    <select id="countGoodsId" parameterType="java.lang.String" resultType="int">
+        SELECT
+            COUNT(goods_id)
+        FROM
+            t_info_slideshow_home
+        WHERE
+            is_delete = 0
+            AND goods_id = #{goodsId}
+        <if test="slideshowId != null and slideshowId != '' ">
+            AND slideshow_id != #{slideshowId}
+        </if>
+    </select>
+
+    <!--查询轮播图对应的序号是否存在-->
+    <select id="countSlideshowNum" parameterType="int" resultType="int">
+        SELECT
+            COUNT(slideshow_num)
+        FROM
+            t_info_slideshow_home
+        WHERE
+            is_delete = 0
+            AND slideshow_num = #{slideshowNum}
+        <if test="slideshowId != null and slideshowId != '' ">
+            AND slideshow_id != #{slideshowId}
+        </if>
+    </select>
+
+    <!--校验轮播图中不可重复信息是否存在重复-->
+    <select id="countSlideshowInfo" parameterType="com.xzsd.pc.slideshowHome.entity.SlideshowHome" resultType="int">
+        SELECT
+            IF( COUNT(goods_id) != 0,1,0 ) +
+            IF( (SELECT COUNT(slideshow_num) FROM t_info_slideshow_home WHERE is_delete = 0 AND slideshow_num = #{slideshowNum}
+                <if test="slideshowId != null and slideshowId != '' ">
+                    AND slideshow_id != #{slideshowId}
+                </if>) != 0 ,2,0  )
+        FROM
+            t_info_slideshow_home
+        WHERE
+            is_delete = 0
+        AND goods_id = #{goodsId}
+        <if test="slideshowId != null and slideshowId != '' ">
+            AND slideshow_id != #{slideshowId}
+        </if>
+    </select>
+
+
+
+    <!--处理排序序号-->
+    <update id="solveSlideshowNum" parameterType="com.xzsd.pc.slideshowHome.entity.SlideshowHome">
+        UPDATE
+            t_info_slideshow_home
+        SET
+            slideshow_num = slideshow_num + 1
+        WHERE
+            slideshow_num <![CDATA[ >= ]]> #{slideshowNum}
+            AND slideshow_id != #{slideshowId}
+    </update>
+
+    <!--添加首页轮播图-->
+    <insert id="addSlideshowHome" parameterType="com.xzsd.pc.slideshowHome.entity.SlideshowHome">
+        INSERT INTO t_info_slideshow_home(
+            slideshow_id,
+            slideshow_num,
+            slideshow_path,
+            start_time,
+            end_time,
+            slideshow_state_id,
+            goods_id,
+            is_delete,
+            create_time,
+            create_user,
+            update_time,
+            update_user,
+            version
+        )VALUES(
+            #{slideshowId},
+            #{slideshowNum},
+            #{slideshowPath},
+            #{startTime},
+            #{endTime},
+            1,
+            #{goodsId},
+            0,
+            NOW( ),
+            #{createUser},
+            NOW( ),
+            #{createUser},
+            0)
+    </insert>
+
+    <!--分页查询首页轮播图接口-->
+    <select id="listSlideshowHomeByPage" parameterType="java.lang.String" resultType="com.xzsd.pc.slideshowHome.entity.SlideshowHome">
+        SELECT
+            slideshow_num slideshowNum,
+            slideshow_path slideshowPath,
+            slideshow_state_id slideshowStateId,
+            start_time startTime,
+            end_time endTime,
+            slideshow_id slideshowId,
+            version
+        FROM
+            t_info_slideshow_home
+        WHERE
+            is_delete = 0
+        <if test="slideshowStateId != null and slideshowStateId != '' ">
+            AND slideshow_state_id = #{slideshowStateId}
+        </if>
+            order by slideshow_num,create_time desc
+    </select>
+
+    <!--查询商品信息接口-->
+    <select id="listGoodsByPage" parameterType="com.xzsd.pc.goods.entity.Goods" resultType="com.xzsd.pc.goods.entity.Goods">
+        SELECT
+            goods_id goodsId,
+            goods_name goodsName,
+            goods_state_id goodsStateId,
+            one_classify_id oneClassifyId,
+            two_classify_id twoClassifyId,
+            version
+        FROM
+            t_info_goods
+        WHERE
+            is_delete = 0
+            AND goods_state_id = 1
+        <if test="goodsName != null and ''!= goodsName ">
+            AND goods_name like concat('%', #{goodsName}, '%')
+        </if>
+        <if test="goodsId != null and '' != goodsId ">
+            AND goods_id like concat('%', #{goodsId}, '%')
+        </if>
+            ORDER BY create_time DESC
+    </select>
+
+    <!--修改首页轮播图状态接口-->
+    <update id="updateSlideshowHomeState" parameterType="java.util.List" >
+        <foreach collection="updateSlideList" item="item" index="index" open="" separator=";" close=";" >
+            UPDATE t_info_slideshow_home
+            <set>
+                slideshow_state_id = #{item.slideshowStateId},
+                update_time = NOW(),
+                update_user = #{item.updateUser,jdbcType=VARCHAR},
+                version = version + 1
+            </set>
+            <where>
+                slideshow_id = #{item.slideshowId,jdbcType=VARCHAR}
+                AND version = #{item.version}
+            </where>
+        </foreach>
+    </update>
+
+    <!--删除首页轮播图接口-->
+    <update id="deleteSlideshowHome" parameterType="java.lang.String" >
+        UPDATE t_info_slideshow_home
+        SET
+            is_delete = 1
+        WHERE
+            slideshow_id IN
+        <foreach collection="deleteSlideshowHome" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    
+</mapper>
