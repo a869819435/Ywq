@@ -90,16 +90,6 @@ public class ImageUpload {
         this.area = area;
     }
 
-//    public void getTencent(){
-//        accessKey = "AKID3wdu00IWTBg1LTqJq33oMuEUWIp8g1r2";
-//        secretKey = "80cS3QZgZElZdWDj2BkuukKhc9UahZFh";
-//        bucket = "image-test-1301700625";
-//        bucketName = "image-test-1301700625";
-//        path = "https://image-test-1301700625.cos.ap-guangzhou.myqcloud.com";
-//        qianzhui = "walk_bookstore_image";
-//        area = "ap-guangzhou";
-//    }
-
     public COSClient tencentStart(){
         //getTencent();
         System.out.println(accessKey);
