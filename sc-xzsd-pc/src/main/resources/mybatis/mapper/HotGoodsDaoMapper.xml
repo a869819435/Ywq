@@ -56,8 +56,8 @@
             hot_goods_num = hot_goods_num + 1
         WHERE
             is_delete = 0
-            AND hot_goods_num <![CDATA[ >= ]]> #{hotGoodsNum}
             AND hot_goods_id != #{hotGoodsId}
+            AND hot_goods_num <![CDATA[ >= ]]> #{hotGoodsNum}
     </update>
 
     <!--添加人热门商品-->

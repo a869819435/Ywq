@@ -23,6 +23,7 @@
         FROM
             t_sys_menu_role a
             LEFT JOIN t_sys_menu b ON a.is_delete = 0
+            AND b.is_delete = 0
             AND a.menu_id = b.menu_id
         WHERE
             a.role = #{role}

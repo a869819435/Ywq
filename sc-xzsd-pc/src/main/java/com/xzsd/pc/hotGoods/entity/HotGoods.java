@@ -16,7 +16,7 @@ public class HotGoods {
     /**
      * 热门商品序号
      */
-    private String hotGoodsNum;
+    private int hotGoodsNum;
     /**
      * 商品编号
      */
@@ -66,11 +66,11 @@ public class HotGoods {
         this.hotGoodsId = hotGoodsId;
     }
 
-    public String getHotGoodsNum() {
+    public int getHotGoodsNum() {
         return hotGoodsNum;
     }
 
-    public void setHotGoodsNum(String hotGoodsNum) {
+    public void setHotGoodsNum(int hotGoodsNum) {
         this.hotGoodsNum = hotGoodsNum;
     }
 

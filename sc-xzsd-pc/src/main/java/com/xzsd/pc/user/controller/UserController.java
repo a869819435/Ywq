@@ -121,21 +121,4 @@ public class UserController {
             throw e;
         }
     }
-
-    /**
-     * 修改用户密码
-     * @param user
-     * @return
-     * @Author ywq
-     * @Date 2020-04-10
-     */
-    @PostMapping("updatePassword")
-    public AppResponse updatePassword(User user) {
-        try {
-            return userService.updatePassword(user);
-        } catch (Exception e) {
-            logger.error("修改异常", e);
-            throw new ScServerException("修改密码失败，请重试");
-        }
-    }
 }

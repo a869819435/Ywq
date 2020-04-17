@@ -31,7 +31,7 @@ public interface HotGoodsDao {
      * @param hotGoodsId
      * @return
      */
-    int countHotGoodsNum(@Param("hotGoodsNum") String hotGoodsNum, @Param("hotGoodsId") String hotGoodsId);
+    int countHotGoodsNum(@Param("hotGoodsNum") int hotGoodsNum, @Param("hotGoodsId") String hotGoodsId);
 
     /**
      * 校验热门商品信息是否存在重复
@@ -46,7 +46,7 @@ public interface HotGoodsDao {
      * @param hotGoodsId
      * @return
      */
-    int solveAddHotGoodsNum(@Param("hotGoodsNum") int hotGoodsNum, @Param("hotGoodsId") String hotGoodsId);
+    int solveAddHotGoodsNum(@Param("hotGoodsNum") String hotGoodsNum, @Param("hotGoodsId") String hotGoodsId);
 
     /**
      * 添加热门商品

@@ -222,6 +222,7 @@ public class GoodsService {
         List<String> listGoodsId = Arrays.asList(goodsId.split(","));
         //获取当前登录人的id
         String updateUser = SecurityUtils.getCurrentUserId();
+        //删除商品(其首页轮播图和热门一起删除)
         int count = goodsDao.deleteGoods(listGoodsId,updateUser);
         if(0 == count){
             return AppResponse.versionError("删除商品失败！");

@@ -49,7 +49,8 @@ public class HotGoodsService {
         }
         if( (countHotGoodsInfo & 2 ) == 2 ){
             //调整热门商品的序号
-            hotGoodsDao.solveAddHotGoodsNum(Integer.valueOf(hotGoods.getHotGoodsNum()),hotGoods.getHotGoodsId());
+            String temp = String.valueOf(hotGoods.getHotGoodsNum());
+            hotGoodsDao.solveAddHotGoodsNum(temp,hotGoods.getHotGoodsId());
         }
         return AppResponse.success("添加热门商品成功");
     }
@@ -92,7 +93,7 @@ public class HotGoodsService {
         if((countHotGoodsInfo & 2 ) == 2){
             //现获取该热门的序号，然后调整热门商品的序号，空出要修改的序号
             oldHotGoodsNum = hotGoodsDao.getHotGoodsNum(hotGoods.getHotGoodsId());
-            hotGoodsNum = Integer.valueOf(hotGoods.getHotGoodsNum());
+            hotGoodsNum = hotGoods.getHotGoodsNum();
         }
         //获取当前登录人id
         hotGoods.setUpdateUser(SecurityUtils.getCurrentUserId());

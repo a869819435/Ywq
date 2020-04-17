@@ -55,10 +55,6 @@ public class User {
     @JsonIgnore
     private String userPassword;
     /**
-     * 用户新密码
-     */
-    private String userNewPassword;
-    /**
      * 用户角色编号
      */
     private String role;
@@ -177,14 +173,6 @@ public class User {
 
     public void setUserPassword(String userPassword) {
         this.userPassword = userPassword;
-    }
-
-    public String getUserNewPassword() {
-        return userNewPassword;
-    }
-
-    public void setUserNewPassword(String userNewPassword) {
-        this.userNewPassword = userNewPassword;
     }
 
     public String getRole() {

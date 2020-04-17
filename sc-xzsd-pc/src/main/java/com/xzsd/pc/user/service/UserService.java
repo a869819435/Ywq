@@ -137,36 +137,4 @@ public class UserService {
         }
         return appResponse;
     }
-
-    /**
-     * 修改密码
-     * @param user
-     * @return
-     */
-    public AppResponse updatePassword(User user) {
-        AppResponse appResponse = AppResponse.success("修改密码成功！");
-        //需要校验原密码是否正确
-        String oldPassword = user.getUserPassword();
-        if( null != oldPassword && !"".equals(oldPassword) ) {
-            String oldDbPassword = PasswordUtils.generatePassword(oldPassword);
-            //获取用户原信息
-            User userDetail = userDao.getUser(user.getUserId());
-            if(null == userDetail) {
-                return AppResponse.versionError("用户不存在或已被删除！");
-            } else {
-                if(!oldDbPassword.equals(userDetail.getUserPassword())) {
-                    return AppResponse.versionError("原密码不匹配，请重新输入！");
-                }
-            }
-        }
-        //获取新的密码
-        user.setUserNewPassword(PasswordUtils.generatePassword(user.getUserNewPassword()));
-        //获取修改者
-        user.setUpdateUser(SecurityUtils.getCurrentUserId());
-        int count = userDao.updateUserPassword(user);
-        if(0 == count) {
-            appResponse = AppResponse.versionError("修改密码失败，请重试！");
-        }
-        return appResponse;
-    }
 }

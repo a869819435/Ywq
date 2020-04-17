@@ -77,7 +77,7 @@ public class Goods implements Serializable {
     /**
      * 商品浏览量
      */
-    private int goodsViewNum;
+    private int goodsViewsNum;
     /**
      * 作者
      */
@@ -243,12 +243,12 @@ public class Goods implements Serializable {
         this.goodsStateId = goodsStateId;
     }
 
-    public int getGoodsViewNum() {
-        return goodsViewNum;
+    public int getGoodsViewsNum() {
+        return goodsViewsNum;
     }
 
-    public void setGoodsViewNum(int goodsViewNum) {
-        this.goodsViewNum = goodsViewNum;
+    public void setGoodsViewsNum(int goodsViewsNum) {
+        this.goodsViewsNum = goodsViewsNum;
     }
 
     public String getGoodsAuthor() {

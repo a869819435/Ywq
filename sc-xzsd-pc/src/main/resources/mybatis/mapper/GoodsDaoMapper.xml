@@ -196,32 +196,34 @@
                 AND version = #{item.version}
             </where>
         </foreach>
-
-        <!--        UPDATE t_info_goods-->
-        <!--        SET-->
-        <!--            goods_state_id = #{goodsStateId},-->
-        <!--            update_time = NOW(),-->
-        <!--            update_user = #{updateUser},-->
-        <!--            version = version + 1-->
-        <!--        WHERE-->
-        <!--            goods_id IN-->
-        <!--        <foreach item="item" index="index" collection="listGoodsId" open="(" separator="," close=")">-->
-        <!--            #{item}-->
-        <!--        </foreach>-->
-        <!--            AND version IN-->
-        <!--        <foreach item="item" index="index" collection="listVersion" open="(" separator="," close=")">-->
-        <!--            #{item}-->
-        <!--        </foreach>-->
     </update>
 
-    <!--删除商品-->
+    <!--删除商品(其首页轮播图和热门一起删除)[实测发现根据一条返回是否删除成功]-->
     <update id="deleteGoods" parameterType="java.lang.String" >
         UPDATE t_info_goods
         SET
             is_delete = 1
         WHERE
             goods_id IN
-            <foreach collection="listGoodsId" item="item" index="index" open="(" separator="," close=")">
+            <foreach collection="listGoodsId" item="item" index="index" open="(" separator="," close=");">
+                #{item}
+            </foreach>
+        UPDATE t_info_hot_goods
+        SET
+            is_delete = 1,
+            update_user = #{updateUser},
+            update_time = NOW()
+        WHERE
+            goods_id IN
+            <foreach collection="listGoodsId" item="item" index="index" open="(" separator="," close=");">
+                #{item}
+            </foreach>
+        UPDATE t_info_slideshow_home
+        SET
+            is_delete = 1
+        WHERE
+            goods_id IN
+            <foreach collection="listGoodsId" item="item" index="index" open="(" separator="," close=");">
                 #{item}
             </foreach>
     </update>
