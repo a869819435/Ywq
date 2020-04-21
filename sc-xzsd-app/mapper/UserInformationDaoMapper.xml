@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.app.userInformation.dao.UserInformationDao">
+
+    <!--获取用户角色-->
+    <select id="getUserRole" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT
+            role
+        FROM
+            t_sys_user
+        WHERE
+            is_delete = 0
+            AND user_id = #{userId}
+    </select>
+
+    <!--查询用户详情-->
+    <select id="getUser" parameterType="java.lang.String" resultType="com.xzsd.app.userInformation.entity.UserInfo">
+        SELECT
+        <if test="role == 2 or role == 4 ">
+            b.store_id storeId,
+            b.store_name storeName,
+            concat(c.area_name,d.area_name,e.area_name,b.address) address,
+        </if>
+        <if test="role == 2">
+            b.invite_code inviteCode,
+            a.version,
+        </if>
+        <if test="role == 3">
+            a.phone,
+            a.version,
+        </if>
+            a.user_acct userAcct,
+            a.user_image userImage,
+            a.user_name userName
+        FROM
+		    t_sys_user a
+        <if test="role == 2 ">
+		    LEFT JOIN t_info_store b ON b.is_delete = 0
+            AND b.user_id = #{userId}
+            LEFT JOIN t_info_client f ON f.user_id = #{userId}
+            AND f.invite_code = b.invite_code
+        </if>
+        <if test="role == 2 or role == 4 ">
+            LEFT JOIN t_info_area_level c ON c.area_id = b.province_id
+            LEFT JOIN t_info_area_level d ON d.area_id = b.city_id
+            LEFT JOIN t_info_area_level e ON e.area_id = b.area_id
+        </if>
+        WHERE
+		    a.user_id = #{userId}
+            AND a.is_delete = 0
+    </select>
+
+    <!--修改用户密码-->
+    <update id="updateUserPassword" parameterType="com.xzsd.app.register.entity.RegisterInfo">
+        UPDATE t_sys_user
+        SET user_password = #{userNewPassword},
+            update_time = NOW( ),
+            update_user = #{updateUser},
+            version = version + 1
+        WHERE
+            user_id = #{userId}
+    </update>
+</mapper>

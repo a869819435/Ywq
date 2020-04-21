@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.app.managerInformation.dao.ManagerInformationDao">
+
+    <!--查询负责店长门店的司机信息-->
+    <select id="listManagerDrivers" parameterType="java.lang.String" resultType="com.xzsd.app.managerInformation.entity.DriverInfo">
+        SELECT
+            c.user_name userName,
+            c.phone
+        FROM
+            t_info_store a
+            LEFT JOIN t_info_driver b ON b.is_delete = 0
+            AND a.province_id = b.province_id
+            AND a.city_id = b.city_id
+            AND a.area_id = b.area_id
+            LEFT JOIN t_sys_user c ON b.driver_id = c.user_id
+        WHERE
+            a.is_delete = 0
+            AND a.user_id = #{userId}
+    </select>
+
+</mapper>

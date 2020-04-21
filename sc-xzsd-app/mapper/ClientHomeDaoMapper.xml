@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.app.clientHome.dao.ClientHomeDao">
+
+    <!--查询首页轮播图信息接口-->
+    <select id="listRotationCharHome" resultType="com.xzsd.app.clientHome.entity.ClientHomeSlideshowInfo">
+        SELECT
+            goods_id goodsId,
+            slideshow_path slideshowPath
+        FROM
+            t_info_slideshow_home
+        WHERE
+            is_delete = 0
+            AND slideshow_state_id = 1
+            AND NOW() BETWEEN start_time AND end_time
+        ORDER BY slideshow_num ASC
+    </select>
+
+    <!--查询热门商品数量-->
+    <select id="getHotGoodsShowNum" resultType="int">
+        SELECT
+            dict_value hotGoodsShowNum,
+            version
+        FROM
+            t_sys_dictionary
+        WHERE
+            id = 'hotGoodsShowNum'
+    </select>
+
+    <!--查询热门商品信息-->
+    <select id="listHotGoods" parameterType="int" resultType="com.xzsd.app.clientHome.entity.ClientHomeGoodsInfo">
+        SELECT
+            b.goods_id goodsId,
+            b.goods_name goodsName,
+            b.goods_image_path goodsImagePath,
+            b.goods_price goodsPrice
+        FROM
+            t_info_hot_goods a
+            LEFT JOIN t_info_goods b ON a.goods_id = b.goods_id
+        WHERE
+            a.is_delete = 0
+        ORDER BY a.hot_goods_num,a.create_time DESC
+        LIMIT #{showNum}
+        <!--limit n 等同于 limit 0,n-->
+    </select>
+
+</mapper>

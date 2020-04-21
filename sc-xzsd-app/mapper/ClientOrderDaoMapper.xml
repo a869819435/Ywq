@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.app.clientOrder.dao.ClientOrderDao">
+
+    <!--获取选中的商品的库存-->
+    <select id="getGoodsInventory" parameterType="java.lang.String" resultType="int">
+        SELECT
+            goods_inventory GoodsInventory
+        FROM
+            t_info_goods
+        WHERE
+            goods_id IN
+            <foreach collection="goodsIdList" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </select>
+
+    <!--更新商品库存-->
+    <update id="updateGoodsInventory" parameterType="java.util.List">
+        <foreach collection="updateGoods" item="item" index="index" open="" separator=";" close=";">
+            UPDATE t_info_goods
+            SET
+                goods_inventory = #{item.goodsInventory},
+                update_time = NOW(),
+                update_user = #{item.updateUser},
+                version = version + 1
+            WHERE
+                goods_id = #{item.goodsId}
+        </foreach>
+    </update>
+
+    <!--添加订单-->
+    <insert id="addOrder" parameterType="com.xzsd.app.clientOrder.entity.ClientOrder">
+        INSERT INTO t_info_order(
+            order_id,
+            store_id,
+            order_all_cost,
+            order_all_goods_count,
+            user_id,
+            order_state_id,
+            pay_time,
+            reduced_all_price,
+            is_delete,
+            create_time,
+            create_user,
+            update_time,
+            update_user,
+            version
+        )VALUES(
+                #{clientOrder.orderId},
+                #{clientOrder.storeId},
+                #{clientOrder.orderAllCost},
+                #{clientOrder.orderAllGoodsCount},
+                #{clientOrder.createUser},
+                0,
+                NOW(),
+                0,
+                0,
+                NOW(),
+                #{clientOrder.createUser},
+                NOW(),
+                #{clientOrder.createUser},
+                0 );
+        <foreach collection="clientOrderDeepenList" item="item" index="index" open="" separator=";"  close=";">
+            INSERT INTO t_info_order_deepen(
+                order_goods_id,
+                order_id,
+                goods_id,
+                goods_count,
+                reduced_price,
+                is_delete,
+                create_time,
+                create_user,
+                update_time,
+                update_user,
+                version
+            )VALUES(
+                    #{item.orderGoodsId},
+                    #{item.orderId},
+                    #{item.goodsId},
+                    #{item.clientGoodsNum},
+                    0,
+                    0,
+                    NOW(),
+                    #{item.createUser},
+                    NOW(),
+                    #{item.createUser},
+                    0
+            )
+        </foreach>
+    </insert>
+
+    <!--查询订单列表-->
+    <select id="listOrderByPage" parameterType="java.lang.String" resultType="com.xzsd.app.clientOrder.entity.ClientOrderVO">
+        SELECT
+            a.order_id orderId,
+            a.order_state_id orderStateId,
+            a.order_all_cost orderAllCost,
+            a.order_all_goods_count orderAllGoodsCount,
+            a.version
+        FROM
+            t_info_order a
+        WHERE
+            a.is_delete = 0
+            AND a.user_id = #{userId}
+        <if test="orderStateId != null and orderStateId != '' ">
+            AND a.order_state_id = #{orderStateId}
+        </if>
+    </select>
+
+    <!--查询订单商品列表-->
+    <select id="listOrderGoodsVO" parameterType="java.lang.String" resultType="com.xzsd.app.clientOrder.entity.ClientOrderGoodsVO">
+        SELECT
+            a.order_id orderId,
+            c.goods_name goodsName,
+            c.goods_image_path goodsImagePath,
+            c.goods_describe goodsDescribe,
+            c.goods_price goodsPrice,
+            b.goods_count cartGoodsCount,
+            b.goods_id goodsId
+        FROM
+            t_info_order a
+            LEFT JOIN t_info_order_deepen b ON b.order_id = a.order_id
+            LEFT JOIN t_info_goods c ON c.goods_id = b.goods_id
+        WHERE
+            a.is_delete = 0
+            AND a.order_id IN
+        <foreach collection="orderId" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="orderStateId != null and orderStateId != '' ">
+            AND a.order_state_id = #{orderStateId}
+        </if>
+    </select>
+
+    <!--更新订单状态-->
+    <update id="updateOrderState" parameterType="java.lang.String">
+        UPDATE t_info_order
+        SET
+            order_state_id = #{orderStateId},
+            update_time = NOW(),
+            update_user = #{updateUser},
+            version = version + 1
+        WHERE
+            order_id = #{orderId}
+        <if test=" version != null and version != ''  ">
+            AND version = #{version}
+        </if>
+    </update>
+
+    <!--查询订单详情-->
+    <select id="listOrderDeepen" parameterType="java.lang.String" resultType="com.xzsd.app.clientOrder.entity.ClientOrderDeepenVO">
+        SELECT
+            d.store_name storeName,
+            CONCAT(e.area_name,f.area_name,g.area_name,d.address) address,
+            c.goods_name goodsName,
+            c.goods_price goodsPrice,
+            c.goods_image_path goodsImagePath,
+            c.goods_describe goodsDescribe,
+            b.goods_count cartGoodsCount,
+            b.goods_id goodsId,
+            a.order_all_cost orderAllCost,
+            a.order_all_goods_count orderAllGoodsCount,
+            a.order_id orderId,
+            a.create_time crateTime,
+            a.order_state_id orderStateId
+        FROM
+            t_info_order a
+            LEFT JOIN t_info_order_deepen b ON b.order_id = a.order_id
+            LEFT JOIN t_info_goods c ON c.goods_id = b.goods_id
+            LEFT JOIN t_info_store d ON a.store_id = d.store_id
+            LEFT JOIN t_info_area_level e ON e.area_id = d.province_id
+            LEFT JOIN t_info_area_level f ON f.area_id = d.city_id
+            LEFT JOIN t_info_area_level g ON g.area_id = d.area_id
+        WHERE
+            a.is_delete = 0
+            AND a.order_id = #{orderId}
+    </select>
+
+    <!--查询订单评价商品信息列表-->
+    <select id="listGoodsForEvaluate" parameterType="java.lang.String" resultType="com.xzsd.app.clientOrder.entity.ClientOrderGoods">
+        SELECT
+            c.goods_id goodsId,
+            c.goods_image_path goodsImagePath
+        FROM
+            t_info_order a
+            LEFT JOIN t_info_order_deepen b ON b.order_id = a.order_id
+            LEFT JOIN t_info_goods c ON c.goods_id = b.goods_id
+        WHERE
+            a.order_id = #{orderId}
+    </select>
+
+    <!--新增订单商品评价-->
+    <insert id="addGoodsEvaluate" parameterType="java.util.List" >
+        <foreach collection="evaluateList" item="item" index="i" open="" separator=";" close=";">
+            INSERT INTO t_info_goods_evaluate(
+                evaluate_id,
+                evaluate_score,
+                evaluate_content,
+                user_id,
+                goods_id,
+                is_delete,
+                create_time,
+                create_user,
+                update_time,
+                update_user,
+                version
+            )VALUES(
+                    #{item.evaluateId},
+                    #{item.evaluateScore},
+                    #{item.evaluateContent},
+                    #{item.userId},
+                    #{item.goodsId},
+                    0,
+                    NOW(),
+                    #{item.userId},
+                    NOW(),
+                    #{item.userId},
+                    0 )
+            <if test="item.imageList != null">
+                <foreach collection="item.imageList" item="image" index="j" open=";" separator=";" close="">
+                    INSERT INTO t_info_evaluate_image(
+                    image_id,
+                    evaluate_id,
+                    image_num,
+                    image_path,
+                    is_delete,
+                    create_time,
+                    create_user,
+                    update_time,
+                    update_user,
+                    version
+                    )VALUES(
+                    #{image.imageId},
+                    #{image.evaluateId},
+                    #{image.imageNum},
+                    #{image.imagePath},
+                    0,
+                    NOW(),
+                    #{image.createUser},
+                    NOW(),
+                    #{image.createUser},
+                    0 )
+                </foreach>
+            </if>
+        </foreach>
+    </insert>
+
+    <!--更新评价成功相关信息-->
+    <update id="updateEvaluateState" parameterType="java.lang.String">
+        UPDATE t_info_order
+        SET
+            order_state_id = #{orderStateId},
+            update_time = NOW(),
+            update_user = #{updateUser},
+            version = version + 1
+        WHERE
+            order_id = #{orderId}
+        <foreach collection="goodsIds" item="item" index="index" open=";" separator=";" close=";">
+            UPDATE t_info_goods
+            SET
+                goods_evaluate_score = (SELECT avg(evaluate_score) FROM t_info_goods_evaluate WHERE goods_id = #{item})
+            WHERE
+                goods_id = #{item}
+        </foreach>
+    </update>
+</mapper>

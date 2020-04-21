@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.app.managerOrder.dao.ManagerOrderDao">
+
+    <!--查询店长订单列表-->
+    <select id="listManagerOrdersByPage" parameterType="java.lang.String" resultType="com.xzsd.app.managerOrder.entity.ManagerOrderVO">
+        SELECT
+            a.order_id orderId,
+            a.order_state_id orderStateId,
+            d.user_id userId,
+            d.user_name userName,
+            d.phone,
+            a.order_all_cost orderAllCost,
+            a.order_all_goods_count orderAllGoodsCount,
+            a.version
+        FROM
+            t_info_store e
+            LEFT JOIN t_info_order a ON a.store_id = e.store_id
+            AND e.user_id = #{userId}
+            LEFT JOIN t_sys_user d ON a.user_id = d.user_id
+        WHERE
+            a.is_delete = 0
+        <if test="orderStateId != null and orderStateId != '' ">
+            AND a.order_state_id = #{orderStateId}
+        </if>
+    </select>
+
+    <!--查询店长订单的商品信息列表-->
+    <select id="listManagerOrdersGoods" parameterType="int" resultType="com.xzsd.app.managerOrder.entity.ManagerOrderGoodsVO">
+        SELECT
+            a.order_id orderId,
+            c.goods_name goodsName,
+            c.goods_image_path goodsImagePath,
+            c.goods_describe goodsDescribe,
+            c.goods_price goodsPrice,
+            b.goods_count cartGoodsCount,
+            b.goods_id goodsId
+        FROM
+            t_info_store e
+            LEFT JOIN t_info_order a ON a.store_id = e.store_id
+            LEFT JOIN t_info_order_deepen b ON b.order_id = a.order_id
+            LEFT JOIN t_info_goods c ON c.goods_id = b.goods_id
+            LEFT JOIN t_sys_user d ON a.user_id = d.user_id
+        WHERE
+            a.is_delete = 0
+            AND a.order_id IN
+        <foreach collection="orderIdList" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="orderStateId != null and orderStateId != '' ">
+            AND a.order_state_id = #{orderStateId}
+        </if>
+    </select>
+
+    <!--更新店长订单状态-->
+    <update id="updateManagerOrderState" parameterType="java.lang.String">
+        UPDATE t_info_order
+        SET
+            order_state_id = #{orderStateId},
+            update_time = NOW(),
+            update_user = #{updateUser},
+            version = version + 1
+        WHERE
+            order_id = #{orderId}
+            AND version = #{version}
+    </update>
+
+    <!--查询店长订单详情-->
+    <select id="listManagerOrderDeepen" parameterType="java.lang.String" resultType="com.xzsd.app.managerOrder.entity.ManagerOrderDeepenVO">
+        SELECT
+            d.store_name storeName,
+            CONCAT(e.area_name,f.area_name,g.area_name,d.address) address,
+            c.goods_name goodsName,
+            c.goods_price goodsPrice,
+            c.goods_image_path goodsImagePath,
+            b.goods_count cartGoodsCount,
+            b.goods_id goodsId,
+            a.order_all_cost orderAllCost,
+            a.order_all_goods_count orderAllGoodsCount,
+            a.order_id orderId,
+            a.create_time crateTime,
+            a.order_state_id orderStateId
+        FROM
+            t_info_order a
+            LEFT JOIN t_info_order_deepen b ON b.order_id = a.order_id
+            LEFT JOIN t_info_goods c ON c.goods_id = b.goods_id
+            LEFT JOIN t_info_store d ON a.store_id = d.store_id
+            LEFT JOIN t_info_area_level e ON e.area_id = d.province_id
+            LEFT JOIN t_info_area_level f ON f.area_id = d.city_id
+            LEFT JOIN t_info_area_level g ON g.area_id = d.area_id
+        WHERE
+            a.is_delete = 0
+            AND a.order_id = #{orderId}
+    </select>
+
+</mapper>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.app.clientGoods.dao.ClientGoodsDao">
+
+    <!--查询商品详情-->
+    <select id="getGoods" parameterType="java.lang.String" resultType="com.xzsd.app.clientGoods.entity.ClientGoodsInfo">
+        SELECT
+            goods_name goodsName,
+            isbn,
+            goods_describe goodsDescribe,
+            goods_price goodsPrice,
+            goods_evaluate_score goodsEvaluateScore,
+            goods_image_path goodsImagePath,
+            goods_author goodsAuthor,
+            goods_press goodsPress
+        FROM
+            t_info_goods
+        WHERE
+            goods_id = #{goodsId}
+    </select>
+
+    <!--查询商品评价列表接口-->
+    <select id="listGoodsEvaluatesByPage" parameterType="com.xzsd.app.clientGoods.entity.ClientGoodsEvaluates" resultType="com.xzsd.app.clientGoods.entity.ClientGoodsEvaluatesVO">
+        SELECT
+            b.user_acct userAcct,
+            a.evaluate_id evaluateId,
+            a.evaluate_content evaluateContent,
+            a.evaluate_score evaluateScore,
+            a.create_time createTime
+        FROM
+            t_info_goods_evaluate a
+            LEFT JOIN t_sys_user b ON b.user_id = a.user_id
+        WHERE
+            a.is_delete = 0
+            AND b.is_delete = 0
+            AND a.goods_id = #{goodsId}
+        <if test="evaluateScore == 1">
+            AND a.evaluate_score BETWEEN 0 AND 1
+        </if>
+        <if test="evaluateScore == 3">
+            AND a.evaluate_score BETWEEN 2 AND 3
+        </if>
+        <if test="evaluateScore == 5">
+            AND a.evaluate_score BETWEEN 4 AND 5
+        </if>
+        ORDER BY a.create_time DESC
+    </select>
+
+    <!--查询评价图片列表接口-->
+    <select id="listImagePath" parameterType="int" resultType="com.xzsd.app.clientGoods.entity.ClientGoodsEvaluates">
+        SELECT
+            a.evaluate_id evaluateId,
+            c.image_path imagePath
+        FROM
+            t_info_goods_evaluate a
+            LEFT JOIN t_info_evaluate_image c ON c.evaluate_id = a.evaluate_id
+        WHERE
+            a.is_delete = 0
+            AND a.evaluate_id IN
+        <foreach collection="evaluateIds" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="evaluateScore == 1">
+            AND a.evaluate_score BETWEEN 0 AND 1
+        </if>
+        <if test="evaluateScore == 3">
+            AND a.evaluate_score BETWEEN 2 AND 3
+        </if>
+        <if test="evaluateScore == 5">
+            AND a.evaluate_score BETWEEN 4 AND 5
+        </if>
+            ORDER BY c.image_num
+    </select>
+
+    <!--获取全部的一级商品分类列表-->
+    <select id="listOneGoodsClassify" resultType="com.xzsd.app.clientGoods.entity.ClientGoodsClassify">
+        SELECT
+            classify_id classifyId,
+            classify_name classifyName
+        FROM
+            t_info_goods_classify
+        WHERE
+            is_delete = 0
+            AND classify_parent = '0'
+    </select>
+
+    <!--获取全部的二级商品分类以及商品-->
+    <select id="listGetClassGoods" parameterType="java.lang.String" resultType="com.xzsd.app.clientGoods.entity.ClientGoodsClassify">
+        SELECT
+            a.classify_id classifyId,
+            a.classify_name classifyName,
+            b.goods_id goodsId,
+            b.goods_name goodsName,
+            b.goods_image_path goodsImagePath,
+            b.goods_price goodsPrice
+        FROM
+            t_info_goods_classify a
+            LEFT JOIN t_info_goods b ON b.is_delete = 0
+            AND a.classify_id = b.two_classify_id
+        WHERE
+            a.is_delete = 0
+            AND a.classify_parent = #{classifyId}
+    </select>
+
+</mapper>

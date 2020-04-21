@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xzsd.app.register.dao.RegisterDao">
+
+    <!--统计此电话注册的数量和用户账号数量-->
+    <select id="countInfo" parameterType="com.xzsd.app.register.entity.RegisterInfo" resultType="int">
+        SELECT
+        <if test="inviteCode != null and inviteCode != '' ">
+            IF( (SELECT COUNT(invite_code) FROM t_info_store WHERE invite_code = #{inviteCode})=0,4,0) +
+        </if>
+            IF(count(user_acct) != 0,1,0 ) +
+            IF( (select count(phone) from t_sys_user where is_delete = 0
+            and phone = #{phone}
+            <if test="userId != null and userId != '' ">
+                and user_id != #{userId}
+            </if>
+            <if test="role != null and role != '' ">
+                and role = #{role}
+            </if>)!=0,2,0)
+        FROM
+            t_sys_user
+        WHERE
+            is_delete = 0
+            AND user_acct = #{userAcct}
+        <if test="userId != null and userId != '' ">
+            AND user_id != #{userId}
+        </if>
+    </select>
+
+    <!--新增用户信息-->
+    <insert id="addUser" parameterType="com.xzsd.app.register.entity.RegisterInfo">
+        insert into t_sys_user
+        (user_id,
+         user_image,
+         user_acct,
+         user_name,
+         sex,
+         phone,
+         mail,
+         id_card,
+         user_password,
+         role,
+         is_delete,
+         create_time,
+         create_user,
+         update_time,
+         update_user,
+         version
+        )values(
+             #{userId},
+             #{userImage},
+             #{userAcct},
+             #{userName},
+             #{sex},
+             #{phone},
+             #{mail},
+             #{idCard},
+             #{userPassword},
+             4,
+             0,
+             now(),
+             #{createUser},
+             now(),
+             #{createUser},
+             0);
+        INSERT INTO t_info_client(
+        user_id,
+        invite_code,
+        is_delete,
+        create_time,
+        create_user,
+        update_time,
+        update_user,
+        version
+        )VALUES(
+            #{userId},
+            #{inviteCode},
+            0,
+            now(),
+            #{createUser},
+            now(),
+            #{createUser},
+            0
+        )
+    </insert>
+
+</mapper>
