@@ -232,7 +232,11 @@ public class Goods implements Serializable {
     }
 
     public void setGoodsShelfTime(String goodsShelfTime) {
-        this.goodsShelfTime = goodsShelfTime;
+        if(goodsShelfTime == null || "".equals(goodsShelfTime)){
+            this.goodsShelfTime = goodsShelfTime;
+        }else{
+            this.goodsShelfTime = goodsShelfTime.replace(".0","");
+        }
     }
 
     public String getGoodsStateId() {

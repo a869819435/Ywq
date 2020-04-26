@@ -3,9 +3,10 @@
 <mapper namespace="com.xzsd.app.clientOrder.dao.ClientOrderDao">
 
     <!--获取选中的商品的库存-->
-    <select id="getGoodsInventory" parameterType="java.lang.String" resultType="int">
+    <select id="getGoodsInventory" parameterType="java.lang.String" resultType="com.xzsd.app.clientGoods.entity.ClientGoodsInfo">
         SELECT
-            goods_inventory GoodsInventory
+            goods_inventory goodsInventory,
+            goods_id goodsId
         FROM
             t_info_goods
         WHERE
@@ -104,7 +105,12 @@
             a.is_delete = 0
             AND a.user_id = #{userId}
         <if test="orderStateId != null and orderStateId != '' ">
-            AND a.order_state_id = #{orderStateId}
+            <if test="orderStateId != 4">
+                AND a.order_state_id = #{orderStateId}
+            </if>
+            <if test="orderStateId == 4">
+                AND a.order_state_id IN (4,5)
+            </if>
         </if>
     </select>
 
@@ -129,9 +135,54 @@
             #{item}
         </foreach>
         <if test="orderStateId != null and orderStateId != '' ">
-            AND a.order_state_id = #{orderStateId}
+            <if test="orderStateId != 4">
+                AND a.order_state_id = #{orderStateId}
+            </if>
+            <if test="orderStateId == 4">
+                AND a.order_state_id IN (4,5)
+            </if>
         </if>
     </select>
+
+    <!--获取订单里的商品信息-->
+    <select id="getOrderGoods" parameterType="java.lang.String" resultType="com.xzsd.app.clientOrder.entity.ClientOrderGoods">
+        SELECT
+            b.goods_count cartGoodsCount,
+            b.goods_id goodsId
+        FROM
+            t_info_order a
+            LEFT JOIN t_info_order_deepen b ON a.orede
+        WHERE
+            order_id = #{orderId}
+    </select>
+
+    <!--更新商品库存-->
+    <update id="addGoodsInventory" parameterType="java.util.List">
+        <foreach collection="orderGoodsList" item="item" index="index" open="" separator=";" close=";">
+            UPDATE t_info_goods
+            SET
+                goods_inventory =  #{item.goodsInventory},
+                update_time = NOW(),
+                update_user = #{item.updateUser},
+                version = version + 1
+            WHERE
+                goods_id = #{item.goodsId}
+        </foreach>
+    </update>
+
+    <!--更新商品库存-->
+    <update id="updateGoodsSales" parameterType="java.util.List">
+        <foreach collection="orderGoodsList" item="item" index="index" open="" separator=";" close=";">
+            UPDATE t_info_goods
+            SET
+                goods_sales = goods_sales + #{item.goodsCount},
+                update_time = NOW(),
+                update_user = #{item.updateUser},
+                version = version + 1
+            WHERE
+                goods_id = #{item.goodsId}
+        </foreach>
+    </update>
 
     <!--更新订单状态-->
     <update id="updateOrderState" parameterType="java.lang.String">
@@ -259,7 +310,7 @@
         <foreach collection="goodsIds" item="item" index="index" open=";" separator=";" close=";">
             UPDATE t_info_goods
             SET
-                goods_evaluate_score = (SELECT avg(evaluate_score) FROM t_info_goods_evaluate WHERE goods_id = #{item})
+                goods_evaluate_score = (SELECT AVG(evaluate_score) FROM t_info_goods_evaluate WHERE goods_id = #{item})
             WHERE
                 goods_id = #{item}
         </foreach>

@@ -20,7 +20,7 @@ public interface ClientOrderDao {
      * @param goodsIdList
      * @return
      */
-    List<Integer> getGoodsInventory(@Param("goodsIdList") List<String> goodsIdList);
+    List<ClientGoodsInfo> getGoodsInventory(@Param("goodsIdList") List<String> goodsIdList);
 
     /**
      * 更新商品库存
@@ -53,6 +53,27 @@ public interface ClientOrderDao {
      * @return
      */
     List<ClientOrderGoodsVO> listOrderGoodsVO(@Param("orderId")List<String> orderId,@Param("orderStateId")String orderStateId);
+
+    /**
+     * 获取订单里的商品信息
+     * @param orderId
+     * @return
+     */
+    List<OrderGoods> getOrderGoods(@Param("orderId")String orderId);
+
+    /**
+     * 更新商品库存
+     * @param orderGoodsList
+     * @return
+     */
+    int addGoodsInventory(@Param(value = "updateGoods") List<OrderGoods> orderGoodsList);
+
+    /**
+     * 更新商品库存
+     * @param orderGoodsList
+     * @return
+     */
+    int updateGoodsSales(@Param(value = "updateGoods") List<OrderGoods> orderGoodsList);
 
     /**
      * 更新订单状态接口

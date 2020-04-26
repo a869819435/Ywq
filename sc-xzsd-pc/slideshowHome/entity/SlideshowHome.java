@@ -113,7 +113,11 @@ public class SlideshowHome {
     }
 
     public void setStartTime(String startTime) {
-        this.startTime = startTime;
+        if(startTime == null || "".equals(startTime)){
+            this.startTime = startTime;
+        }else{
+            this.startTime = startTime.replace(".0","");
+        }
     }
 
     public String getEndTime() {
@@ -121,7 +125,11 @@ public class SlideshowHome {
     }
 
     public void setEndTime(String endTime) {
-        this.endTime = endTime;
+        if(endTime == null || "".equals(endTime)){
+            this.endTime = endTime;
+        }else{
+            this.endTime = endTime.replace(".0","");
+        }
     }
 
     public String getGoodsId() {

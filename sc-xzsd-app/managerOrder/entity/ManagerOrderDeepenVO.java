@@ -22,11 +22,11 @@ public class ManagerOrderDeepenVO {
      */
     private String orderStateId;
     /**
-     * 门店名称
+     * 客户姓名
      */
     private String userName;
     /**
-     * 门店地址
+     * 客户电话
      */
     private String phone;
     /**

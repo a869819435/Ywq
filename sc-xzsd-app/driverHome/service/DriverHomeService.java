@@ -3,6 +3,8 @@ package com.xzsd.app.driverHome.service;
 import com.neusoft.core.restful.AppResponse;
 import com.neusoft.security.client.utils.SecurityUtils;
 import com.xzsd.app.driverHome.dao.DriverHomeDao;
+import com.xzsd.app.driverHome.entity.DriverHomeData;
+import com.xzsd.app.driverHome.entity.StroeInfo;
 import com.xzsd.app.managerInformation.entity.DriverInfo;
 import org.springframework.stereotype.Service;
 
@@ -27,11 +29,12 @@ public class DriverHomeService {
      */
     public AppResponse listDriverStores(){
         String userId = SecurityUtils.getCurrentUserId();
-        List<DriverInfo> driverInfoList = driverHomeDao.listDriverStores(userId);
-        if (driverInfoList == null || driverInfoList.size() == 0){
+        List<StroeInfo> storeInfos = driverHomeDao.listDriverStores(userId);
+        if (storeInfos == null || storeInfos.size() == 0){
             AppResponse.notFound("您负责的地区尚未有分布门店！");
         }
-        return AppResponse.success("查询司机负责的门店信息成功！",driverInfoList);
+        DriverHomeData list = new DriverHomeData();
+        list.setList(storeInfos);
+        return AppResponse.success("查询司机负责的门店信息成功！",list);
     }
-
 }

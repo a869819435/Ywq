@@ -4,8 +4,8 @@ import com.neusoft.core.restful.AppResponse;
 import com.neusoft.security.client.utils.SecurityUtils;
 import com.xzsd.app.managerInformation.dao.ManagerInformationDao;
 import com.xzsd.app.managerInformation.entity.DriverInfo;
-import com.xzsd.app.managerOrder.dao.ManagerOrderDao;
-import org.apache.ibatis.annotations.Param;
+import com.xzsd.app.managerInformation.entity.ManagerInfoData;
+import com.xzsd.app.managerOrder.entity.ManagerOrderData;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -29,11 +29,13 @@ public class ManagerInformationService {
      */
     public AppResponse listManagerDrivers(){
         String userId = SecurityUtils.getCurrentUserId();
-        List<DriverInfo> driverInfoList = managerInformationDao.listManagerDrivers(userId);
-        if(driverInfoList == null || driverInfoList.size() == 0){
+        List<DriverInfo> driverInfos = managerInformationDao.listManagerDrivers(userId);
+        if(driverInfos == null || driverInfos.size() == 0){
             return AppResponse.notFound("暂时没有分配司机负责您的门店");
         }
-        return AppResponse.success("查询负责店长门店的司机信息成功",driverInfoList);
+        ManagerInfoData list = new ManagerInfoData();
+        list.setList(driverInfos);
+        return AppResponse.success("查询负责店长门店的司机信息成功",list);
     }
 
 }

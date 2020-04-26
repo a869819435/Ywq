@@ -10,80 +10,68 @@ import java.util.List;
  */
 public class GoodsClassifyTree {
     /**
-     * 该节点id
+     * 分类的编号
      */
-    private String id;
+    private String classifyId;
     /**
-     * 该节点的父结点id
+     * 分类的名称
      */
-    private String parentId;
+    private String classifyName;
     /**
-     * 该节点的名称
+     * 父级编号
      */
-    private String name;
+    private String classifyParent;
     /**
-     * 节点等级
+     * 备注
      */
-    private int level;
+    private String classifyComment;
     /**
-     * 该节点数据
+     * 版本号
      */
-    private Object data;
+    private String version;
     /**
-     * 该节点对应的孩子节点(一级)
-     */
-    private List<GoodsClassifyTree> oneClassifyList;
-    /**
-     * 该节点对应的孩子节点(二级)
+     * 该节点对应的孩子节点
      */
     private List<GoodsClassifyTree> twoClassifyList;
 
-    public String getId() {
-        return id;
+    public String getClassifyId() {
+        return classifyId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setClassifyId(String classifyId) {
+        this.classifyId = classifyId;
     }
 
-    public String getParentId() {
-        return parentId;
+    public String getClassifyName() {
+        return classifyName;
     }
 
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
+    public void setClassifyName(String classifyName) {
+        this.classifyName = classifyName;
     }
 
-    public String getName() {
-        return name;
+    public String getClassifyParent() {
+        return classifyParent;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setClassifyParent(String classifyParent) {
+        this.classifyParent = classifyParent;
     }
 
-    public int getLevel() {
-        return level;
+    public String getClassifyComment() {
+        return classifyComment;
     }
 
-    public void setLevel(int level) {
-        this.level = level;
+    public void setClassifyComment(String classifyComment) {
+        this.classifyComment = classifyComment;
     }
 
-    public Object getData() {
-        return data;
+    public String getVersion() {
+        return version;
     }
 
-    public void setData(Object data) {
-        this.data = data;
-    }
-
-    public List<GoodsClassifyTree> getOneClassifyList() {
-        return oneClassifyList;
-    }
-
-    public void setOneClassifyList(List<GoodsClassifyTree> oneClassifyList) {
-        this.oneClassifyList = oneClassifyList;
+    public void setVersion(String version) {
+        this.version = version;
     }
 
     public List<GoodsClassifyTree> getTwoClassifyList() {

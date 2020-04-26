@@ -15,10 +15,11 @@
             c.goods_original_cost goodsShelfCost
         FROM
             t_info_order a
-            LEFT JOIN t_info_order_deepen b ON a.order_id = #{orderId}
-            AND a.order_id = b.order_id
+            LEFT JOIN t_info_order_deepen b ON a.order_id = b.order_id
             AND a.is_delete = 0
             LEFT JOIN t_info_goods c ON b.goods_id = c.goods_id
+        WHERE
+            a.order_id = #{orderId}
     </select>
 
     <!--分页查询订单列表-->
@@ -38,13 +39,13 @@
         WHERE
             a.is_delete = 0
         <if test="role == 2">
-            AND a.user_id = #{nowLogin}
+            AND b.user_id = #{nowLogin}
         </if>
         <if test="o.userName != null and o.userName != '' ">
-            AND a.user_name LIKE concat('%', #{o.userName}, '%')
+            AND b.user_name LIKE concat('%', #{o.userName}, '%')
         </if>
         <if test="o.phone != null and o.phone != '' ">
-            AND a.phone LIKE concat('%', #{o.phone}, '%')
+            AND b.phone LIKE concat('%', #{o.phone}, '%')
         </if>
         <if test="o.orderId != null and o.orderId != '' ">
             AND a.order_id LIKE  concat('%', #{o.orderId}, '%')
@@ -52,14 +53,79 @@
         <if test="o.orderStateId != null and o.orderStateId != '' ">
             AND a.order_state_id LIKE  concat('%', #{o.orderStateId}, '%')
         </if>
-        <if test="payTimeEnd != null and payTimeEnd != '' ">
-            AND a.pay_time <![CDATA[ >= ]]> #{payTimeStart}
-        </if>
         <if test="payTimeStart != null and payTimeStart != '' ">
-            AND a.pay_time <![CDATA[ <= ]]> #{payTimeEnd}
+            AND a.pay_time BETWEEN #{payTimeStart} AND #{payTimeEnd}
         </if>
-        ORDER BY a.create_time DESC
+            ORDER BY a.create_time DESC
     </select>
+
+<!--    &lt;!&ndash;获取所选订单中当前状态&ndash;&gt;-->
+<!--    <select id="getChosenOrder" parameterType="java.lang.String" resultType="com.xzsd.pc.order.entity.Order">-->
+<!--        SELECT-->
+<!--            order_id orderId,-->
+<!--            order_state_id orderStateId-->
+<!--        FROM-->
+<!--            t_info_order-->
+<!--        WHERE-->
+<!--            order_id IN-->
+<!--        <foreach collection="orderIds" item="item" index="index" open="(" separator="," close=")">-->
+<!--            #{item}-->
+<!--        </foreach>-->
+<!--    </select>-->
+
+    <!--获取所选订单中的商品信息-->
+    <select id="getOrderGoods" parameterType="java.lang.String" resultType="com.xzsd.pc.order.entity.OrderGoods">
+        SELECT
+            b.order_id orderId,
+            a.order_state_id orderStateId,
+            b.goods_id goodsId,
+            c.goods_inventory goodsInventory,
+            b.goods_count goodsCount,
+            c.version
+        FROM
+            t_info_order_deepen b
+            LEFT JOIN t_info_goods c ON b.goods_id = c.goods_id
+            LEFT JOIN t_info_order a ON a.order_id = b.order_id
+        WHERE
+            b.order_id IN
+        <foreach collection="orderIds" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--更新所选订单中的商品库存-->
+    <update id="updateOrderGoodsInventory" parameterType="java.util.List">
+        <foreach collection="goods" item="item" index="index" open="" separator=";" close=";">
+            UPDATE t_info_goods
+            <set>
+                goods_inventory = #{item.goodsInventory},
+                update_time = NOW(),
+                update_user = #{item.updateUser},
+                version = version + 1
+            </set>
+            <where>
+                goods_id = #{item.goodsId,jdbcType=VARCHAR}
+                AND version = #{item.version}
+            </where>
+        </foreach>
+    </update>
+
+    <!--更新所选订单中的销售量-->
+    <update id="updateOrderGoodsSales" parameterType="java.util.List">
+        <foreach collection="goods" item="item" index="index" open="" separator=";" close=";">
+            UPDATE t_info_goods
+            <set>
+                goods_sales = goods_sales - #{item.goodsCount},
+                update_time = NOW(),
+                update_user = #{item.updateUser},
+                version = version + 1
+            </set>
+            <where>
+                goods_id = #{item.goodsId,jdbcType=VARCHAR}
+                AND version = #{item.version}
+            </where>
+        </foreach>
+    </update>
 
     <!--修改订单状态-->
     <update id="updateOrderState" parameterType="java.util.List">

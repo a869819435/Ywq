@@ -5,6 +5,8 @@ import com.neusoft.security.client.utils.SecurityUtils;
 import com.neusoft.util.StringUtil;
 import com.xzsd.pc.store.dao.StoreDao;
 import com.xzsd.pc.store.entity.Store;
+import com.xzsd.pc.user.dao.UserDao;
+import com.xzsd.pc.user.enums.RoleEnums;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,9 @@ public class StoreService {
     @Resource
     private StoreDao storeDao;
 
+    @Resource
+    private UserDao userDao;
+
     /**
      * 新增门店
      * @param store
@@ -33,6 +38,13 @@ public class StoreService {
      */
     @Transactional(rollbackFor = Exception.class )
     public AppResponse addStore(Store store){
+        //获取当前登录人
+        store.setCreateUser(SecurityUtils.getCurrentUserId());
+        //店长无权限新增
+        String nowRole = userDao.getUserRole(store.getCreateUser());
+        if (nowRole == RoleEnums.MANAGE.getType()){
+            return AppResponse.versionError("您没有权限的不足");
+        }
         //校验店长是否存在、电话是否已是别的店所用、用户是否已经是店长、营业执照是否已被使用
         int countStoreInfo = storeDao.countStoreInfo(store);
         String error = "";
@@ -55,8 +67,6 @@ public class StoreService {
         store.setInviteCode(store.getAreaId() + StringUtil.getRankNumLetter(6));
         //生成门店编号
         store.setStoreId("st" + StringUtil.getCommonCode(2));
-        //获取当前登录人
-        store.setCreateUser(SecurityUtils.getCurrentUserId());
         //新增用户
         int count = storeDao.addStore(store);
         if(0 == count){
@@ -129,9 +139,18 @@ public class StoreService {
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse deleteStore(String storeId){
-        List<String> listStoreId = Arrays.asList(storeId.split(","));
         //获取当前登录人id
         String updateUser = SecurityUtils.getCurrentUserId();
+        //店长无权限删除
+        String nowRole = userDao.getUserRole(updateUser);
+        if (nowRole == RoleEnums.MANAGE.getType()){
+            return AppResponse.versionError("您没有权限的不足");
+        }
+        List<String> listStoreId = Arrays.asList(storeId.split(","));
+        List<String> havingOrder = storeDao.getHavingOrder(listStoreId);
+        if(havingOrder != null && havingOrder.size() != 0 ){
+            return AppResponse.versionError("门店编号为" + String.join(",",havingOrder) + "还有未完成的订单");
+        }
         //删除用户
         int count = storeDao.deleteStore(listStoreId,updateUser);
         if(0 == count){

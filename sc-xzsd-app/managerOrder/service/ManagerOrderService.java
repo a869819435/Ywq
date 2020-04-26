@@ -3,6 +3,7 @@ package com.xzsd.app.managerOrder.service;
 import com.neusoft.core.restful.AppResponse;
 import com.neusoft.security.client.utils.SecurityUtils;
 import com.xzsd.app.managerOrder.dao.ManagerOrderDao;
+import com.xzsd.app.managerOrder.entity.ManagerOrderData;
 import com.xzsd.app.managerOrder.entity.ManagerOrderDeepenVO;
 import com.xzsd.app.managerOrder.entity.ManagerOrderGoodsVO;
 import com.xzsd.app.managerOrder.entity.ManagerOrderVO;
@@ -93,6 +94,17 @@ public class ManagerOrderService {
             return AppResponse.notFound("获取订单详情失败");
         }
         //初始化订单详情信息列表
+        ManagerOrderDeepenVO orderDeepen = getOrderDeepenInfo(managerOrderDeepenVOList);
+        return AppResponse.success("获取订单详情成功！",orderDeepen);
+    }
+
+    /**
+     * 对订单详情进行初始化和赋值
+     * @param managerOrderDeepenVOList
+     * @return
+     */
+    private ManagerOrderDeepenVO getOrderDeepenInfo(List<ManagerOrderDeepenVO> managerOrderDeepenVOList){
+        //初始化订单详情信息列表
         ManagerOrderDeepenVO managerOrderDeepenVO = new ManagerOrderDeepenVO();
         ManagerOrderDeepenVO clientOrderDeepenGet = managerOrderDeepenVOList.get(0);
         //赋值订单信息
@@ -116,6 +128,6 @@ public class ManagerOrderService {
             managerOrderGoods.setGoodsId(i.getGoodsId());
             managerOrderDeepenVO.getGoodsList().add(managerOrderGoods);
         });
-        return AppResponse.success("获取订单详情成功！",managerOrderDeepenVO);
+        return managerOrderDeepenVO;
     }
 }

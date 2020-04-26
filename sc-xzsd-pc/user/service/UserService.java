@@ -7,12 +7,13 @@ import com.xzsd.pc.user.dao.UserDao;
 import com.xzsd.pc.user.entity.User;
 import com.xzsd.pc.user.enums.RoleEnums;
 import com.xzsd.pc.utils.PasswordUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.logging.Handler;
 
 import static com.neusoft.core.page.PageUtils.getPageInfo;
 
@@ -35,6 +36,13 @@ public class UserService {
      */
     @Transactional(rollbackFor = Exception.class )
     public AppResponse addUser(User user){
+        //获取用户id
+        String createUser = SecurityUtils.getCurrentUserId();
+        //获取当前登录角色
+        String nowRole = userDao.getUserRole(createUser);
+        if (nowRole.equals(user.getRole()) ){
+            return AppResponse.versionError("您的权限不足");
+        }
         //校验账号、手机号是否存在
         int countInfo = userDao.countInfo(user);
         String errorInfo = "";
@@ -47,9 +55,7 @@ public class UserService {
         if(0 != countInfo){
             return AppResponse.versionError(errorInfo);
         }
-        //获取用户id
-        String createrUser = SecurityUtils.getCurrentUserId();
-        user.setCreateUser(createrUser);
+        user.setCreateUser(createUser);
         //获取密码的加密形式
         String password = PasswordUtils.generatePassword(user.getUserPassword());
         user.setUserPassword(password);
@@ -91,6 +97,12 @@ public class UserService {
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse updateUser(User user){
+        //获取用户id
+        String updateUser = SecurityUtils.getCurrentUserId();
+        String nowRole = userDao.getUserRole(updateUser);
+        if (nowRole.equals(user.getRole()) ){
+            return AppResponse.versionError("您的权限不足");
+        }
         AppResponse appResponse = AppResponse.success("修改成功！");
         //校验账号、手机号是否存在
         int countInfo = userDao.countInfo(user);
@@ -104,8 +116,6 @@ public class UserService {
         if(0 != countInfo){
             return AppResponse.versionError(errorInfo);
         }
-        //获取用户id
-        String updateUser = SecurityUtils.getCurrentUserId();
         user.setUpdateUser(updateUser);
         //获取密码的加密形式
         String password = PasswordUtils.generatePassword(user.getUserPassword());
@@ -127,9 +137,44 @@ public class UserService {
     @Transactional(rollbackFor = Exception.class)
     public AppResponse deleteUser(String userId){
         List<String> listUserId = Arrays.asList(userId.split(","));
-        AppResponse appResponse = AppResponse.success("删除成功！");
         //获取用户id
         String updateUser = SecurityUtils.getCurrentUserId();
+        AppResponse appResponse = AppResponse.success("删除成功！");
+        //需要获取角色的用户id
+        List<String> getRoleUserId = new ArrayList<>();
+        getRoleUserId.add(updateUser);
+        getRoleUserId.addAll(listUserId);
+        //获取所有角色
+        List<User> roles = userDao.getAllRole(getRoleUserId);
+        //记录角色编号为2的用户
+        List<String> userIdOfManager = new ArrayList<>();
+        String nowRole = "";
+        for (int i = 0 ; i < getRoleUserId.size() ; i++){
+            //获取当前登录角色编号
+            if(updateUser.equals(roles.get(i).getUserId())){
+                nowRole = roles.get(i).getRole();
+            }
+        }
+        for (int i = 0 ; i < roles.size() ; i++ ){
+            //自己不跟自己比
+            if (updateUser.equals(roles.get(i).getUserId())){
+                continue;
+            }
+            //管理员不能删管理员
+            if (roles.get(i).getRole().equals(nowRole)){
+                return AppResponse.versionError("删除账号为" + roles.get(i).getUserAcct() + "的用户权限不足");
+            }
+            //是店长的用户
+            if (roles.get(i).getRole().equals(RoleEnums.MANAGE.getType())){
+                userIdOfManager.add(roles.get(i).getUserId());
+            }
+        }
+        //获取有门店的店长编号
+        List<String> havingStore = userDao.getHavingStore(userIdOfManager);
+        if( havingStore != null || havingStore.size() != 0 ){
+            String errorInformation = StringUtils.join(havingStore.toString(),",");
+            return AppResponse.versionError("店长编号" + errorInformation + "有绑定门店");
+        }
         //删除用户
         int count = userDao.deleteUser(listUserId,updateUser);
         if(0 == count){

@@ -2,6 +2,7 @@ package com.xzsd.pc.selectCombox.service;
 
 import com.neusoft.core.restful.AppResponse;
 import com.xzsd.pc.selectCombox.dao.SelectComboxDao;
+import com.xzsd.pc.selectCombox.entity.AreaList;
 import com.xzsd.pc.selectCombox.entity.AreaInfo;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,8 @@ public class SelectComboxService {
             //若收到的id为空则赋值0
             areaId = "0";
         }
-        List<AreaInfo> areaInfoList = selectComboxDao.listArea(areaId);
-        return AppResponse.success("区域下拉查询成功！",areaInfoList);
+        AreaList areaList = new AreaList();
+        areaList.setAreaList(selectComboxDao.listArea(areaId));
+        return AppResponse.success("区域下拉查询成功！",areaList);
     }
 }

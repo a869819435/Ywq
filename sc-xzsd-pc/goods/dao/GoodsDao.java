@@ -68,6 +68,13 @@ public interface GoodsDao {
     int updateGoodsState(@Param(value = "listUpdate") List<Goods> listUpdate);
 
     /**
+     * 查看选中的商品是否在订单中
+     * @param listGoodsId
+     * @return
+     */
+    List<String> goodsIdInOrder(@Param("listGoodsId") List<String> listGoodsId);
+
+    /**
      * 删除商品
      * @param listGoodsId
      * @param updateUser

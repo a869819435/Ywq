@@ -35,7 +35,7 @@ public class UserController {
      * @Date 2020-03-24
      */
     @PostMapping("addUser")
-    public AppResponse addUser(User user, String imagePath){
+    public AppResponse addUser(User user,String imagePath){
         try {
             //如果用户上传头像,获取用户头像
             user.setUserImage(imagePath);

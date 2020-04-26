@@ -209,6 +209,22 @@
             AND version = #{version}
     </update>
 
+    <!--获取有订单的门店-->
+    <select id="getHavingOrder" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT
+            DISTINCT a.store_id storeId
+        FROM
+            t_info_store a
+            LEFT JOIN t_info_order b ON a.store_id = b.store_id
+        WHERE
+            b.is_delete = 0
+            AND a.store_id IN
+            <foreach collection="listStoreId" item="item" index="index" open="(" separator=";" close=")">
+                #{item}
+            </foreach>
+        GROUP BY a.store_id
+    </select>
+
     <!--删除门店-->
     <update id="deleteStore" parameterType="java.lang.String">
         UPDATE

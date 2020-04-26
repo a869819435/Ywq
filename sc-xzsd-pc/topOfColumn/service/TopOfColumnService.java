@@ -4,6 +4,7 @@ import com.neusoft.core.restful.AppResponse;
 import com.neusoft.security.client.utils.SecurityUtils;
 import com.xzsd.pc.topOfColumn.dao.TopOfColumnDao;
 import com.xzsd.pc.topOfColumn.entity.TopOfColumn;
+import com.xzsd.pc.user.enums.RoleEnums;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -28,6 +29,9 @@ public class TopOfColumnService {
         String userId = SecurityUtils.getCurrentUserId();
         TopOfColumn topOfColumn = topOfColumnDao.getTopOfColumn(userId);
         topOfColumn.setUserId(userId);
+        if( RoleEnums.DRIVER.getType().equals(topOfColumn.getRole()) || RoleEnums.CLIENT.getType().equals(topOfColumn.getRole())){
+            return AppResponse.versionError("您的权限不足！");
+        }
         return AppResponse.success("查询顶部栏信息成功！",topOfColumn);
     }
 }

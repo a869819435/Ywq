@@ -65,7 +65,9 @@
              0);
         INSERT INTO t_info_client(
         user_id,
+    <if test="inviteCode != null and inviteCode != '' ">
         invite_code,
+    </if>
         is_delete,
         create_time,
         create_user,
@@ -74,7 +76,9 @@
         version
         )VALUES(
             #{userId},
+        <if test="inviteCode != null and inviteCode != '' ">
             #{inviteCode},
+        </if>
             0,
             now(),
             #{createUser},

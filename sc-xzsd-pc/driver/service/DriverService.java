@@ -40,6 +40,13 @@ public class DriverService {
      */
     @Transactional(rollbackFor = Exception.class )
     public AppResponse addDriver(Driver driver){
+        //获取当前登录人
+        driver.setCreateUser(SecurityUtils.getCurrentUserId());
+        //获取当前登录角色
+        String nowRole = userDao.getUserRole(driver.getCreateUser());
+        if (  RoleEnums.MANAGE.equals(nowRole) ){
+            return AppResponse.versionError("您无权新增司机！");
+        }
         User user = new User();
         //将司机部分信息转入user进行校验
         user.setPhone(driver.getPhone());
@@ -61,8 +68,6 @@ public class DriverService {
         }
         //生成司机用户编号
         driver.setDriverId("sj" + StringUtil.getCommonCode(2));
-        //获取当前登录人
-        driver.setCreateUser(SecurityUtils.getCurrentUserId());
         //获取密码的加密形式
         String password = PasswordUtils.generatePassword(driver.getUserPassword());
         driver.setUserPassword(password);
@@ -104,6 +109,13 @@ public class DriverService {
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse updateDriver(Driver driver){
+        //获取当前登录人
+        driver.setUpdateUser(SecurityUtils.getCurrentUserId());
+        //获取当前登录角色
+        String nowRole = userDao.getUserRole(driver.getUpdateUser());
+        if (  RoleEnums.MANAGE.equals(nowRole) ){
+            return AppResponse.versionError("您无权修改司机信息！");
+        }
         User user = new User();
         //获取司机的用户信息
         user.setUserAcct(driver.getUserAcct());
@@ -125,8 +137,6 @@ public class DriverService {
         //获取密码的加密形式
         String password = PasswordUtils.generatePassword(driver.getUserPassword());
         driver.setUserPassword(password);
-        //获取当前登录人
-        driver.setUpdateUser(SecurityUtils.getCurrentUserId());
         //修改用户信息
         int count = driverDao.updateDriver(driver);
         if(0 == count){
@@ -142,9 +152,15 @@ public class DriverService {
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse deleteDriver(String driverId){
-        List<String> listDriverId = Arrays.asList(driverId.split(","));
         //获取当前登录人id
         String updateUser = SecurityUtils.getCurrentUserId();
+        //获取当前登录角色
+        String nowRole = userDao.getUserRole(updateUser);
+        if (  RoleEnums.MANAGE.equals(nowRole) ){
+            return AppResponse.versionError("您无权删除司机！");
+        }
+        List<String> listDriverId = Arrays.asList(driverId.split(","));
+
         //删除用户
         int count = driverDao.deleteDriver(listDriverId,updateUser);
         if(0 == count){
@@ -152,5 +168,4 @@ public class DriverService {
         }
         return AppResponse.success("删除司机成功！");
     }
-
 }

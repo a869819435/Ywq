@@ -71,7 +71,7 @@
             #{goodsAuthor},
             #{goodsPress},
             0,
-            0,
+            3,
             0,
             0,
             0,
@@ -152,7 +152,9 @@
         ORDER BY a.create_time DESC
     </select>
 
-    <!--修改商品信息-->
+    <!--修改商品信息 e1 lte e2：小于等于
+                    e1 gt e2：大于
+                    e1 gte e2：大于等于-->
     <update id="updateGoods" parameterType="com.xzsd.pc.goods.entity.Goods">
         UPDATE t_info_goods
         SET
@@ -163,6 +165,9 @@
             goods_describe = #{goodsDescribe},
             supplier_name = #{supplierName},
             goods_inventory = #{goodsInventory},
+        <if test="goodsStateId lte 0">
+            goods_state_id = 0
+        </if>
             goods_original_cost = #{goodsOriginalCost},
             goods_price = #{goodsPrice},
             goods_advertise = #{goodsAdvertise},
@@ -199,6 +204,21 @@
             </where>
         </foreach>
     </update>
+
+    <!--查看选中的商品是否在订单中-->
+    <select id="goodsIdInOrder" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT
+            a.goods_id goodsId
+        FROM
+            t_info_goods a
+            LEFT JOIN t_info_order_deepen b ON a.goods_id = b.goods_id
+        WHERE
+            a.goods_id IN
+            <foreach collection="" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        GROUP BY a.goods_id
+    </select>
 
     <!--删除商品(其首页轮播图和热门一起删除)[实测发现根据一条返回是否删除成功]-->
     <update id="deleteGoods" parameterType="java.lang.String" >

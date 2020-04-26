@@ -36,13 +36,13 @@ public class UserInformationService {
         if(role == null || "".equals(role)){
             return AppResponse.versionError("用户不存在或已被删除！");
         }
-        UserInfo userInfo = userInformationDao.getUser(userId,role);
+        UserInfo client = userInformationDao.getUser(userId,role);
         if(role.equals(RoleEnums.DRIVER.getType())){
-            userInfo.setDriverName(userInfo.getUserName());
+            client.setDriverName(client.getUserName());
         }
-        userInfo.setRole(role);
-        userInfo.setUserPassword(null);
-        return AppResponse.success("查询用户详细信息成功",userInfo);
+        client.setRole(role);
+        client.setUserPassword(null);
+        return AppResponse.success("查询用户详细信息成功",client);
     }
 
     /**

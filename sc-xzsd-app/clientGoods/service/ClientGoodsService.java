@@ -47,11 +47,11 @@ public class ClientGoodsService {
      * @return
      */
     public AppResponse getGoods(String goodsId){
-        ClientGoodsInfo clientGoodsInfo = clientGoodsDao.getGoods(goodsId);
-        if(clientGoodsInfo == null){
+        ClientGoodsInfo goods = clientGoodsDao.getGoods(goodsId);
+        if(goods == null){
             return AppResponse.notFound("该商品已下架！");
         }
-        return AppResponse.success("查询商品详情成功！",clientGoodsInfo);
+        return AppResponse.success("查询商品详情成功！",goods);
     }
 
     /**
@@ -61,9 +61,8 @@ public class ClientGoodsService {
      */
     public AppResponse listGoodsEvaluates(ClientGoodsEvaluates clientGoodsEvaluates){
         //获取除图片外的全部信息
-        List<ClientGoodsEvaluatesVO> clientGoodsEvaluatesVOList = clientGoodsDao.listGoodsEvaluatesByPage(clientGoodsEvaluates);
-        int sum = clientGoodsEvaluatesVOList.size();
-        if(clientGoodsEvaluatesVOList == null || sum == 0 ){
+        List<ClientGoodsEvaluatesVO> goodsEvaluate = clientGoodsDao.listGoodsEvaluatesByPage(clientGoodsEvaluates);
+        if(goodsEvaluate == null || goodsEvaluate.size() == 0 ){
             int score = clientGoodsEvaluates.getEvaluateScore();
             if(score == GOOD_SCORE){
                 return AppResponse.notFound("该商品未有人给好评");
@@ -76,17 +75,18 @@ public class ClientGoodsService {
             }
             return AppResponse.notFound("该商品未有人评价");
         }
+        int sum = goodsEvaluate.size();
         //获取有效的评价id
         List<String> evaluateIds = new ArrayList<>();
         //处理处图片外的评价信息
         Map<String, Integer> map = new HashMap<>();
         for (int i = 0 ; i < sum ; i++){
-            ClientGoodsEvaluatesVO temp = clientGoodsEvaluatesVOList.get(i);
+            ClientGoodsEvaluatesVO temp = goodsEvaluate.get(i);
             String key = temp.getEvaluateId();
             map.put(key, i);
             //赋值除评价图片外的评价信息
             temp.setImageList(new ArrayList<>());
-            clientGoodsEvaluatesVOList.get(i).setEvaluateId(null);
+            goodsEvaluate.get(i).setEvaluateId(null);
             evaluateIds.add(key);
         }
         //获取商品的评价图片信息
@@ -96,10 +96,10 @@ public class ClientGoodsService {
             int parent = map.get(key);
             String url = i.getImagePath();
             if(url != null && !"".equals(url)){
-                clientGoodsEvaluatesVOList.get(parent).getImageList().add(url);
+                goodsEvaluate.get(parent).getImageList().add(url);
             }
         });
-        return AppResponse.success("查询商品评价成功",clientGoodsEvaluatesVOList);
+        return AppResponse.success("查询商品评价成功",goodsEvaluate);
     }
 
     /**
@@ -107,10 +107,12 @@ public class ClientGoodsService {
      * @return
      */
     public AppResponse listOneGoodsClassify(){
-        List<ClientGoodsClassify> oneClassifyList = clientGoodsDao.listOneGoodsClassify();
-        if(oneClassifyList == null){
+        List<ClientGoodsClassify> oneClassify = clientGoodsDao.listOneGoodsClassify();
+        if(oneClassify == null){
             return AppResponse.notFound("未找到商品一级分类信息");
         }
+        ClientGoods oneClassifyList = new ClientGoods();
+        oneClassifyList.setOneClassifyList(oneClassify);
         return AppResponse.success("查询一级商品分类成功",oneClassifyList);
     }
 
@@ -121,7 +123,7 @@ public class ClientGoodsService {
         if(sum == 0){
             return AppResponse.versionError("获取商品二级分类失败");
         }
-        List<ClientTwoClassify> twoClassifyList = new ArrayList<ClientTwoClassify>();
+        List<ClientTwoClassify> twoClassify = new ArrayList<ClientTwoClassify>();
         //创建映射，获取所有商品对应的二级分类
         Map<String ,Integer> map = new HashMap<>();
         int cnt = 0;
@@ -136,7 +138,7 @@ public class ClientGoodsService {
                 clientTwoClassify.setClassifyId(key);
                 clientTwoClassify.setClassifyName(clientGoodsClassify.getClassifyName());
                 clientTwoClassify.setGoodsList(new ArrayList<ClientTwoClassifyGoods>());
-                twoClassifyList.add(clientTwoClassify);
+                twoClassify.add(clientTwoClassify);
             }
         }
         for (int i = 0 ; i < sum ; i++ ){
@@ -144,13 +146,17 @@ public class ClientGoodsService {
             //获取商品对应的分类的序号
             int parent = map.get(clientGoodsClassify.getClassifyId());
             //获取当前商品信息
-            ClientTwoClassifyGoods clientTwoClassifyGoods = new ClientTwoClassifyGoods();
-            clientTwoClassifyGoods.setGoodsId(clientGoodsClassify.getGoodsId());
-            clientTwoClassifyGoods.setGoodsName(clientGoodsClassify.getGoodsName());
-            clientTwoClassifyGoods.setGoodsImagePath(clientGoodsClassify.getGoodsImagePath());
-            clientTwoClassifyGoods.setGoodsPrice(clientGoodsClassify.getGoodsPrice());
-            twoClassifyList.get(parent).getGoodsList().add(clientTwoClassifyGoods);
+            if(clientGoodsClassify.getGoodsId() != null && !"".equals(clientGoodsClassify.getGoodsId())){
+                ClientTwoClassifyGoods clientTwoClassifyGoods = new ClientTwoClassifyGoods();
+                clientTwoClassifyGoods.setGoodsId(clientGoodsClassify.getGoodsId());
+                clientTwoClassifyGoods.setGoodsName(clientGoodsClassify.getGoodsName());
+                clientTwoClassifyGoods.setGoodsImagePath(clientGoodsClassify.getGoodsImagePath());
+                clientTwoClassifyGoods.setGoodsPrice(clientGoodsClassify.getGoodsPrice());
+                twoClassify.get(parent).getGoodsList().add(clientTwoClassifyGoods);
+            }
         }
+        ClientGoods twoClassifyList = new ClientGoods();
+        twoClassifyList.setTwoClassifyList(twoClassify);
         return AppResponse.success("查询二级分类以及其商品成功！",twoClassifyList);
     }
 }

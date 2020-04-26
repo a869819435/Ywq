@@ -84,6 +84,13 @@ public interface StoreDao {
     int updateStore(Store store);
 
     /**
+     * 获取有订单的门店
+     * @param listStoreId
+     * @return
+     */
+    List<String> getHavingOrder(@Param("listStoreId") List<String> listStoreId);
+
+    /**
      * 删除门店
      * @param listStoreId
      * @param updateUser

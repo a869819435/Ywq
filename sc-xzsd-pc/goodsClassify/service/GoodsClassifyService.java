@@ -3,7 +3,9 @@ package com.xzsd.pc.goodsClassify.service;
 import com.neusoft.core.restful.AppResponse;
 import com.neusoft.security.client.utils.SecurityUtils;
 import com.neusoft.util.JsonUtils;
+import com.xzsd.pc.goodsClassify.entity.GoodsClassifyList;
 import com.xzsd.pc.goodsClassify.entity.GoodsClassifyTree;
+import com.xzsd.pc.goodsClassify.entity.GoodsClassifyVO;
 import com.xzsd.pc.utils.RedisUtil;
 import com.neusoft.util.StringUtil;
 import com.xzsd.pc.goodsClassify.dao.GoodsClassifyDao;
@@ -64,18 +66,19 @@ public class GoodsClassifyService {
      */
     public AppResponse getGoodsClassify(String classifyId){
         //以商品分类编号为键
-        String key = classifyId;
-        Object ans = redisUtil.get(key);
+//        String key = classifyId;
+//        Object ans = redisUtil.get(key);
         //如果缓存中有则直接取
-        if(ans != null ){
-            GoodsClassify goodsClassify = JsonUtils.fromJson(ans.toString(),GoodsClassify.class);
-            goodsClassify.setClassifyId(classifyId);
-            return AppResponse.success("查询分类详情成功！",goodsClassify);
-        }
+//        if(ans != null ){
+//            GoodsClassify goodsClassify = JsonUtils.fromJson(ans.toString(),GoodsClassify.class);
+//            goodsClassify.setClassifyId(classifyId);
+//            return AppResponse.success("查询分类详情成功！",goodsClassify);
+//        }
         //缓存中没有则取出数据后再放入缓存，时间为5分钟
         GoodsClassify goodsClassify = goodsClassifyDao.getGoodsClassify(classifyId);
-        String json = JsonUtils.toJson(goodsClassify);
-        redisUtil.set(key,json,300);
+        goodsClassify.setClassifyId(classifyId);
+//        String json = JsonUtils.toJson(goodsClassify);
+//        redisUtil.set(key,json,300);
         return AppResponse.success("查询分类详情成功！",goodsClassify);
     }
 
@@ -93,14 +96,15 @@ public class GoodsClassifyService {
         List<GoodsClassify> goodsClassifyList = goodsClassifyDao.listClassify();
         //初始化树根
         GoodsClassifyTree goodsClassifyTree = new GoodsClassifyTree();
-        goodsClassifyTree.setLevel( 0 );
         //遍历树且赋值
         initTree(goodsClassifyTree,goodsClassifyList,ROOT_ID);
-        return AppResponse.success("查询全部商品分类成功！",goodsClassifyTree);
+        GoodsClassifyList oneClassifyList = new GoodsClassifyList();
+        oneClassifyList.setOneClassifyList(goodsClassifyTree.getTwoClassifyList());
+        return AppResponse.success("查询全部商品分类成功！", oneClassifyList);
     }
 
     /**
-     * 遍历树（哎！跪着填接口文档的坑）
+     * 遍历树
      * @param tree
      * @param goodsClassifyList
      * @param id
@@ -111,30 +115,19 @@ public class GoodsClassifyService {
         while(goodsClassifyIterator.hasNext()){
             //获取填入树的数据
             GoodsClassify goodsClassify = goodsClassifyIterator.next();
-            if( goodsClassify.getClassifyId().equals(id)){
+            if(goodsClassify.getClassifyId() != null && goodsClassify.getClassifyId().equals(id)){
                 //当前节点是当前要找到父节点
                 getDate(tree,goodsClassify);
-            }else if(goodsClassify.getClassifyParent().equals(id)){
+            }else if( goodsClassify.getClassifyParent() != null && goodsClassify.getClassifyParent().equals(id)){
                 //当前节点是当前要找的孩子结点
                 GoodsClassifyTree child = new GoodsClassifyTree();
                 //处理树的等级（填接口文档的坑，其实这个信息不重要）
-                child.setLevel(tree.getLevel() + 1);
                 getDate(child,goodsClassify);
-                if(child.getLevel() == 1){
-                    //当孩子等级为1的时候
-                    if(tree.getOneClassifyList() == null){
-                        List<GoodsClassifyTree> temp = new ArrayList<GoodsClassifyTree>();
-                        tree.setOneClassifyList(temp);
-                    }
-                    tree.getOneClassifyList().add(child);
-                }else {
-                    //当孩子等级为2的时候
-                    if(tree.getTwoClassifyList() == null){
-                        List<GoodsClassifyTree> temp = new ArrayList<GoodsClassifyTree>();
-                        tree.setTwoClassifyList(temp);
-                    }
-                    tree.getTwoClassifyList().add(child);
+                if(tree.getTwoClassifyList() == null){
+                    List<GoodsClassifyTree> temp = new ArrayList<GoodsClassifyTree>();
+                    tree.setTwoClassifyList(temp);
                 }
+                tree.getTwoClassifyList().add(child);
                 //递归，继续寻找
                 initTree(child,goodsClassifyList,goodsClassify.getClassifyId());
             }
@@ -147,10 +140,11 @@ public class GoodsClassifyService {
      * @param goodsClassify
      */
     private void getDate(GoodsClassifyTree tree, GoodsClassify goodsClassify){
-        tree.setId(goodsClassify.getClassifyId());
-        tree.setName(goodsClassify.getClassifyName());
-        tree.setParentId(goodsClassify.getClassifyParent());
-        tree.setData(goodsClassify);
+        tree.setClassifyId(goodsClassify.getClassifyId());
+        tree.setClassifyName(goodsClassify.getClassifyName());
+        tree.setClassifyParent(goodsClassify.getClassifyParent());
+        tree.setClassifyComment(goodsClassify.getClassifyComment());
+        tree.setVersion(goodsClassify.getVersion());
     }
 
     /**

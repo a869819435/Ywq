@@ -1,6 +1,5 @@
 package com.xzsd.pc.user.entity;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
  * @ClassName UserInfo
@@ -9,14 +8,6 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  * @Date 2020-03-24
  */
 public class User {
-    /**
-     * 页码
-     */
-    private int pageSize;
-    /**
-     * 页数
-     */
-    private int pageNum;
     /**
      * 用户编号
      */
@@ -36,7 +27,7 @@ public class User {
     /**
      * 用户性别
      */
-    private int sex;
+    private String sex;
     /**
      * 手机号
      */
@@ -52,7 +43,6 @@ public class User {
     /**
      * 用户密码
      */
-    @JsonIgnore
     private String userPassword;
     /**
      * 用户角色编号
@@ -87,22 +77,6 @@ public class User {
      */
     private String version;
 
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
-    }
-
-    public int getPageNum() {
-        return pageNum;
-    }
-
-    public void setPageNum(int pageNum) {
-        this.pageNum = pageNum;
-    }
-
     public String getUserId() {
         return userId;
     }
@@ -135,11 +109,11 @@ public class User {
         this.userName = userName;
     }
 
-    public int getSex() {
+    public String getSex() {
         return sex;
     }
 
-    public void setSex(int sex) {
+    public void setSex(String sex) {
         this.sex = sex;
     }
 

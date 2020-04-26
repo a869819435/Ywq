@@ -2,49 +2,65 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.xzsd.pc.user.dao.UserDao">
 
+    <!--获取用户角色-->
+    <select id="getUserRole" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT
+            role nowRole
+        FROM
+            t_sys_user
+        WHERE
+            is_delete = 0
+            AND user_id = #{nowLogin}
+    </select>
+
     <!--统计用户账号数量-->
     <select id="countUserAcct" parameterType="com.xzsd.pc.user.entity.User" resultType="int">
-        select count(user_acct)
-        from t_sys_user
-        where is_delete = 0
-        and user_acct = #{userAcct}
+        SELECT
+            COUNT(user_acct)
+        FROM
+            t_sys_user
+        WHERE
+            is_delete = 0
+            AND user_acct = #{userAcct}
         <if test="userId != null and userId != '' ">
-            and user_id != #{userId}
+            AND user_id != #{userId}
         </if>
     </select>
 
     <!--统计此电话注册的数量-->
     <select id="countPhone" parameterType="com.xzsd.pc.user.entity.User" resultType="int">
-        select count(phone)
-        from t_sys_user
-        where
+        SELECT
+            COUNT(phone)
+        FROM
+            t_sys_user
+        WHERE
             is_delete = 0
-            and phone = #{phone}
+            AND phone = #{phone}
         <if test="userId != null and userId != '' ">
-            and user_id != #{userId}
+            AND user_id != #{userId}
         </if>
         <if test="role != null and role != '' ">
-            and role = #{role}
+            AND role = #{role}
         </if>
     </select>
 
     <!--统计此电话注册的数量和用户账号数量-->
     <select id="countInfo" parameterType="com.xzsd.pc.user.entity.User" resultType="int">
         SELECT
-        IF(count(user_acct) != 0,1,0 ) +
-        IF( (select count(phone) from t_sys_user where is_delete = 0
-                and phone = #{phone}
+        IF(COUNT(user_acct) != 0,1,0 ) +
+        IF( (SELECT COUNT(phone) FROM t_sys_user WHERE is_delete = 0
+                AND phone = #{phone}
             <if test="userId != null and userId != '' ">
-                and user_id != #{userId}
+                AND user_id != #{userId}
             </if>
             <if test="role != null and role != '' ">
-                and role = #{role}
+                AND role = #{role}
             </if>)!=0,2,0)
         FROM
             t_sys_user
         WHERE
             is_delete = 0
-        AND user_acct = #{userAcct}
+            AND user_acct = #{userAcct}
         <if test="userId != null and userId != '' ">
             AND user_id != #{userId}
         </if>
@@ -52,64 +68,66 @@
 
     <!--新增用户信息-->
     <insert id="addUser" parameterType="com.xzsd.pc.user.entity.User">
-        insert into t_sys_user
-        (user_id,
-         user_image,
-         user_acct,
-         user_name,
-         sex,
-         phone,
-         mail,
-         id_card,
-         user_password,
-         role,
-         is_delete,
-         create_time,
-         create_user,
-         update_time,
-         update_user,
-         version)
-        values
-        (#{userId},
-         #{userImage},
-         #{userAcct},
-         #{userName},
-         #{sex},
-         #{phone},
-         #{mail},
-         #{idCard},
-         #{userPassword},
-         #{role},
-         0,
-         now(),
-         #{createUser},
-         now(),
-         #{createUser},
-         0)
+        INSERT INTO t_sys_user(
+             user_id,
+             user_image,
+             user_acct,
+             user_name,
+             sex,
+             phone,
+             mail,
+             id_card,
+             user_password,
+             role,
+             is_delete,
+             create_time,
+             create_user,
+             update_time,
+             update_user,
+             version
+        )VALUES(
+                 #{userId},
+                 #{userImage},
+                 #{userAcct},
+                 #{userName},
+                 #{sex},
+                 #{phone},
+                 #{mail},
+                 #{idCard},
+                 #{userPassword},
+                 #{role},
+                 0,
+                 now(),
+                 #{createUser},
+                 now(),
+                 #{createUser},
+                 0)
     </insert>
 
     <!--查询用户详情-->
     <select id="getUser" parameterType="java.lang.String" resultType="com.xzsd.pc.user.entity.User">
-        select
-        user_id userId,
-        user_acct userAcct,
-        user_name userName,
-        user_image userImage,
-        sex,
-        phone,
-        mail,
-        id_card idCard,
-        user_password userPassword,
-        role role,
-        version
-        from t_sys_user
-        where user_id = #{userId}
-        and is_delete = 0
+        SELECT
+            user_id userId,
+            user_acct userAcct,
+            user_name userName,
+            user_image userImage,
+            sex,
+            phone,
+            mail,
+            id_card idCard,
+            user_password userPassword,
+            role role,
+            version
+        FROM
+            t_sys_user
+        WHERE
+            user_id = #{userId}
+            AND is_delete = 0
     </select>
 
     <!--查询用户列表-->
     <select id="listUsersByPage" parameterType="com.xzsd.pc.user.entity.User" resultType="com.xzsd.pc.user.entity.User">
-        select
+        SELECT
             a.user_acct userAcct,
             a.user_name userName,
             a.role role,
@@ -117,26 +135,29 @@
             a.phone phone,
             a.mail mail,
             a.id_card idCard,
-            a.user_id userId
-        from t_sys_user a
-        where a.is_delete = 0
+            a.user_id userId,
+            a.version
+        FROM
+            t_sys_user a
+        WHERE
+            a.is_delete = 0
         <if test="userName != null and userName != '' ">
-            and a.user_name like concat('%',#{userName},'%')
+            AND a.user_name LIKE concat('%',#{userName},'%')
         </if>
         <if test="userAcct != null and userAcct != '' ">
-            and a.user_acct like concat('%',#{userAcct},'%')
+            AND a.user_acct LIKE concat('%',#{userAcct},'%')
         </if>
         <if test="role != null and role != '' ">
-            and a.role = #{role}
+            AND a.role = #{role}
         </if>
-            AND (role = 1 OR role = 2 )
-            order by create_time desc
+            AND a.role IN (1,2)
+            ORDER BY a.create_time DESC
     </select>
 
     <!--更新用户信息-->
     <update id="updateUser" parameterType="com.xzsd.pc.user.entity.User" >
-        update t_sys_user
-        set
+        UPDATE t_sys_user
+        SET
             user_acct     = #{userAcct},
             user_name     = #{userName},
             user_image    = #{userImage},
@@ -149,32 +170,52 @@
             update_time   = now(),
             update_user   = #{updateUser},
             version       = version + 1
-        where
+        WHERE
             user_id = #{userId}
-        and version = #{version}
+            AND version = #{version}
     </update>
+
+    <!--获取所有角色-->
+    <select id="getAllRole" parameterType="java.lang.String" resultType="com.xzsd.pc.user.entity.User">
+        SELECT
+            user_id userId,
+            user_acct userAcct,
+            role role
+        FROM
+            t_sys_user
+        WHERE
+            is_delete = 0
+            AND user_id IN
+            <foreach collection="getRoleUserId" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </select>
+
+    <!--获取有门店的店长编号-->
+    <select id="getHavingStore" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT
+            user_id userId
+        FROM
+            t_info_store
+        WHERE
+            is_delete = 0
+            AND user_id IN
+        <foreach collection="userIdOfManager" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 
     <!--删除用户-->
     <update id="deleteUser" parameterType="com.xzsd.pc.user.entity.User">
-        update t_sys_user
-        set
+        UPDATE t_sys_user
+        SET
             is_delete = 1,
             update_time = now(),
             update_user = #{updateUser}
-        where
-            user_id in
+        WHERE
+            user_id IN
         <foreach item="item" index="index" collection="listUserId" open = "(" separator="," close=")">
             #{item}
         </foreach>
-    </update>
-
-    <!--修改用户密码-->
-    <update id="updateUserPassword" parameterType="com.xzsd.pc.user.entity.User">
-        update t_sys_user
-           set user_password     = #{userNewPassword},
-               update_time = now(),
-               update_user = #{updateUser},
-               version      = version + 1
-         where user_id = #{userId}
     </update>
 </mapper>

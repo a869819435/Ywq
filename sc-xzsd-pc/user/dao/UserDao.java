@@ -14,6 +14,14 @@ import java.util.List;
  */
 @Mapper
 public interface UserDao {
+
+    /**
+     * 获取当前登录的角色
+     * @param nowLogin
+     * @return
+     */
+    String getUserRole(@Param("nowLogin") String nowLogin);
+
     /**
      * 统计用户账号数量
      * @param user 用户信息
@@ -64,18 +72,24 @@ public interface UserDao {
     int updateUser(User user);
 
     /**
+     * 获取所有选中的用户的角色
+     * @param getRoleUserId
+     * @return
+     */
+    List<User> getAllRole(@Param("getRoleUserId") List<String> getRoleUserId);
+
+    /**
+     * 获取有门店的店长编号
+     * @param userIdOfManager
+     * @return
+     */
+    List<String> getHavingStore(@Param("userIdOfManager") List<String> userIdOfManager);
+
+    /**
      * 删除用户
      * @param listUserId 多个用户编号
      * @param updateUser 修改者编号
      * @return
      */
     int deleteUser(@Param("listUserId") List<String> listUserId, @Param("updateUser") String updateUser);
-
-    /**
-     * 修改密码
-     * @param user 用户信息
-     * @return
-     */
-    int updateUserPassword(User user);
-
 }

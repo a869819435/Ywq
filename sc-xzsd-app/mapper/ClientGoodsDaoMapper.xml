@@ -5,6 +5,7 @@
     <!--查询商品详情-->
     <select id="getGoods" parameterType="java.lang.String" resultType="com.xzsd.app.clientGoods.entity.ClientGoodsInfo">
         SELECT
+            goods_id goodsId,
             goods_name goodsName,
             isbn,
             goods_describe goodsDescribe,

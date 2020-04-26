@@ -21,7 +21,12 @@
         WHERE
             a.is_delete = 0
         <if test="orderStateId != null and orderStateId != '' ">
-            AND a.order_state_id = #{orderStateId}
+            <if test="orderStateId != 4">
+                AND a.order_state_id = #{orderStateId}
+            </if>
+            <if test="orderStateId == 4">
+                AND a.order_state_id IN (4,5)
+            </if>
         </if>
     </select>
 
@@ -48,7 +53,12 @@
             #{item}
         </foreach>
         <if test="orderStateId != null and orderStateId != '' ">
-            AND a.order_state_id = #{orderStateId}
+            <if test="orderStateId != 4">
+                AND a.order_state_id = #{orderStateId}
+            </if>
+            <if test="orderStateId == 4">
+                AND a.order_state_id IN (4,5)
+            </if>
         </if>
     </select>
 
@@ -75,6 +85,8 @@
             c.goods_image_path goodsImagePath,
             b.goods_count cartGoodsCount,
             b.goods_id goodsId,
+            h.user_name userName,
+            h.phone,
             a.order_all_cost orderAllCost,
             a.order_all_goods_count orderAllGoodsCount,
             a.order_id orderId,
@@ -88,6 +100,7 @@
             LEFT JOIN t_info_area_level e ON e.area_id = d.province_id
             LEFT JOIN t_info_area_level f ON f.area_id = d.city_id
             LEFT JOIN t_info_area_level g ON g.area_id = d.area_id
+            LEFT JOIN t_sys_user h ON h.user_id = a.user_id
         WHERE
             a.is_delete = 0
             AND a.order_id = #{orderId}

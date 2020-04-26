@@ -29,14 +29,13 @@ public class RegisterController {
     /**
      * 注册客户
      * @param userInfo
-     * @param imagePath
      * @return
      */
-    @PostMapping("addUser")
-    public AppResponse addUser(RegisterInfo userInfo, String imagePath){
+    @PostMapping("clientRegister")
+    public AppResponse clientRegister(RegisterInfo userInfo){
         try {
             //如果用户上传头像,获取用户头像
-            userInfo.setUserImage(imagePath);
+            userInfo.setUserImage(userInfo.getImagePath());
             AppResponse appResponse = registerService.register(userInfo);
             return appResponse;
         }catch (Exception e){

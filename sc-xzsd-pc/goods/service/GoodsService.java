@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import com.neusoft.core.restful.AppResponse;
 import com.neusoft.security.client.utils.SecurityUtils;
 import com.neusoft.util.JsonUtils;
+import com.xzsd.pc.goodsClassify.entity.GoodsClassifyList;
 import com.xzsd.pc.utils.RedisUtil;
 import com.neusoft.util.StringUtil;
 import com.xzsd.pc.goods.dao.GoodsDao;
@@ -78,10 +79,12 @@ public class GoodsService {
         if(classifyId == null || "".equals(classifyId)){
             classifyId = "0";
         }
-        List<GoodsClassify> goodsClassifyList = goodsDao.listGoodsClassify(classifyId);
-        if(0 == goodsClassifyList.size()){
+        List<GoodsClassify> goodsClassifys = goodsDao.listGoodsClassify(classifyId);
+        if(goodsClassifys == null || 0 == goodsClassifys.size()){
             return AppResponse.versionError("查询商品分类下拉框失败！");
         }
+        GoodsClassifyList goodsClassifyList = new GoodsClassifyList();
+        goodsClassifyList.setGoodsClassifyList(goodsClassifys);
         return AppResponse.success("查询商品分类下拉框成功！",goodsClassifyList);
     }
 
@@ -220,6 +223,12 @@ public class GoodsService {
     public AppResponse deleteGoods(String goodsId){
         //取出商品编号转成list
         List<String> listGoodsId = Arrays.asList(goodsId.split(","));
+        //查看选中的商品是否在订单中
+        List<String> goodsInOrder = goodsDao.goodsIdInOrder(listGoodsId);
+        if( goodsInOrder != null && goodsInOrder.size() != 0  ){
+            return AppResponse.versionError("以下" +
+                   String.join(",",goodsInOrder) + "商品还在订单中，无法删除");
+        }
         //获取当前登录人的id
         String updateUser = SecurityUtils.getCurrentUserId();
         //删除商品(其首页轮播图和热门一起删除)

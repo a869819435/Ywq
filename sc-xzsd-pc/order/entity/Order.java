@@ -117,7 +117,7 @@ public class Order {
     }
 
     public void setPayTime(String payTime) {
-        this.payTime = payTime;
+        this.payTime = payTime.replace(".0","");
     }
 
     public String getReducedAllPrice() {

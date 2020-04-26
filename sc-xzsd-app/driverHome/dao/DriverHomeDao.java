@@ -1,5 +1,6 @@
 package com.xzsd.app.driverHome.dao;
 
+import com.xzsd.app.driverHome.entity.StroeInfo;
 import com.xzsd.app.managerInformation.entity.DriverInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -20,6 +21,6 @@ public interface DriverHomeDao {
      * @param userId
      * @return
      */
-    List<DriverInfo> listDriverStores(@Param("userId") String userId);
+    List<StroeInfo> listDriverStores(@Param("userId") String userId);
 
 }

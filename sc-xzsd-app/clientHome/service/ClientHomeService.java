@@ -4,6 +4,7 @@ import com.neusoft.core.restful.AppResponse;
 import com.xzsd.app.clientHome.dao.ClientHomeDao;
 import com.xzsd.app.clientHome.entity.ClientHomeGoodsInfo;
 import com.xzsd.app.clientHome.entity.ClientHomeSlideshowInfo;
+import com.xzsd.app.clientHome.entity.ClientHome;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -30,7 +31,9 @@ public class ClientHomeService {
          if(clientHomeSlideshowInfoList == null || clientHomeSlideshowInfoList.size() == 0){
              return AppResponse.notFound("当前没有有效的首页轮播图！");
          }
-         return AppResponse.success("查询首页轮播图信息成功！",clientHomeSlideshowInfoList);
+         ClientHome slideshowList = new ClientHome();
+         slideshowList.setSlideshowList(clientHomeSlideshowInfoList);
+         return AppResponse.success("查询首页轮播图信息成功！",slideshowList);
     }
 
     /**
@@ -39,10 +42,12 @@ public class ClientHomeService {
      */
     public AppResponse listHotGoods(){
         int showNum = clientHomeDao.getHotGoodsShowNum();
-        List<ClientHomeGoodsInfo> clientHomeGoodsInfoList = clientHomeDao.listHotGoods(showNum);
-        if(clientHomeGoodsInfoList == null ){
+        List<ClientHomeGoodsInfo> clientHomeGoodsInfos = clientHomeDao.listHotGoods(showNum);
+        if(clientHomeGoodsInfos == null ){
             AppResponse.notFound("未查到热门商品信息！");
         }
-        return AppResponse.success("查询热门商品信息成功！",clientHomeGoodsInfoList);
+        ClientHome list = new ClientHome();
+        list.setList(clientHomeGoodsInfos);
+        return AppResponse.success("查询热门商品信息成功！",list);
     }
 }

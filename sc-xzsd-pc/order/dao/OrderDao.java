@@ -2,6 +2,7 @@ package com.xzsd.pc.order.dao;
 
 import com.xzsd.pc.order.entity.Order;
 import com.xzsd.pc.order.entity.OrderDeepen;
+import com.xzsd.pc.order.entity.OrderGoods;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -33,6 +34,35 @@ public interface OrderDao {
      */
     List<Order> listOrdersByPage(@Param("o") Order order, @Param("role") String role, @Param("nowLogin") String nowLogin,
                                  @Param("payTimeStart") String payTimeStart, @Param("payTimeEnd") String payTimeEnd);
+
+//    /**
+//     * 获取所选订单中当前状态
+//     * @param orderIds
+//     * @return
+//     */
+//    List<Order> getChosenOrder(@Param("orderIds") List<String> orderIds);
+
+    /**
+     * 获取所选订单中的商品信息
+     * @param orderIds
+     * @return
+     */
+    List<OrderGoods> getOrderGoods(@Param("orderIds") List<String> orderIds);
+
+    /**
+     * 更新所选订单中的需要更新的商品库存
+     * @param goods
+     * @return
+     */
+    int updateOrderGoodsInventory(@Param("goods") List<OrderGoods> goods);
+
+    /**
+     * 更新所选订单中的需要更新的商品销售量
+     * @param goodsSales
+     * @return
+     */
+    int updateOrderGoodsSales(@Param("goodsSales") List<OrderGoods> goodsSales);
+
     /**
      * 修改订单状态接口
      * @param updateOrderList

@@ -34,13 +34,11 @@
             a.user_name userName
         FROM
 		    t_sys_user a
-        <if test="role == 2 ">
+        <if test="role == 2 or role == 4 ">
 		    LEFT JOIN t_info_store b ON b.is_delete = 0
             AND b.user_id = #{userId}
             LEFT JOIN t_info_client f ON f.user_id = #{userId}
             AND f.invite_code = b.invite_code
-        </if>
-        <if test="role == 2 or role == 4 ">
             LEFT JOIN t_info_area_level c ON c.area_id = b.province_id
             LEFT JOIN t_info_area_level d ON d.area_id = b.city_id
             LEFT JOIN t_info_area_level e ON e.area_id = b.area_id

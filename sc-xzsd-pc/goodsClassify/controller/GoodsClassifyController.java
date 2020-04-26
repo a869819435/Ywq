@@ -68,7 +68,7 @@ public class GoodsClassifyController {
     }
 
     /**
-     * 获取全部分类信息(未检查)
+     * 获取全部分类信息
      * @return
      * @Author ywq
      * @Date 2020-03-29
@@ -76,7 +76,7 @@ public class GoodsClassifyController {
     @PostMapping("listAllGoodsClassify")
     public AppResponse listAllGoodsClassify(){
         try{
-            return AppResponse.success("获取全部分类信息成功！",goodsClassifyService.listAllGoodsClassify());
+            return goodsClassifyService.listAllGoodsClassify();
         }catch (Exception e){
             logger.error("获取全部分类失败",e);
             System.out.println(e.toString());

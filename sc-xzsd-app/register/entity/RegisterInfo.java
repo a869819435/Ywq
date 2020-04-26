@@ -12,6 +12,10 @@ public class RegisterInfo {
      */
     private String userId;
     /**
+     * 图片返回值
+     */
+    private String imagePath;
+    /**
      * 用户头像
      */
     private String userImage;
@@ -80,6 +84,14 @@ public class RegisterInfo {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     public String getUserImage() {

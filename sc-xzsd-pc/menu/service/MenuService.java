@@ -5,6 +5,7 @@ import com.neusoft.security.client.utils.SecurityUtils;
 import com.neusoft.util.StringUtil;
 import com.xzsd.pc.menu.dao.MenuDao;
 import com.xzsd.pc.menu.entity.Menu;
+import com.xzsd.pc.menu.entity.MenuList;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +37,8 @@ public class MenuService {
      * @return
      */
     public AppResponse listMenu(){
-        List<Menu> menuList = menuDao.listMenu();
+        MenuList menuList = new MenuList();
+        menuList.setMenuList(menuDao.listMenu() );
         return AppResponse.success("查询菜单名名列表成功！",menuList);
     }
 
@@ -46,7 +48,8 @@ public class MenuService {
      * @return
      */
     public AppResponse listMenuHome(String role){
-        List<Menu> menuList = menuDao.listMenuHome(role);
+        MenuList menuList = new MenuList();
+        menuList.setMenuList(menuDao.listMenuHome(role));
         return AppResponse.success("查询首页菜单列表成功！",menuList);
     }
 
