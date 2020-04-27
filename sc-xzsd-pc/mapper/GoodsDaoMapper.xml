@@ -116,6 +116,8 @@
             a.goods_original_cost goodsOriginalCost,
             a.goods_price goodsPrice,
             a.goods_sales goodsSales,
+            a.goods_author goodsAuthor,
+            a.goods_press goodsPress,
             b.classify_name oneClassifyName,
             c.classify_name twoClassifyName,
             a.goods_advertise goodsAdvertise,
@@ -165,9 +167,6 @@
             goods_describe = #{goodsDescribe},
             supplier_name = #{supplierName},
             goods_inventory = #{goodsInventory},
-        <if test="goodsStateId lte 0">
-            goods_state_id = 0
-        </if>
             goods_original_cost = #{goodsOriginalCost},
             goods_price = #{goodsPrice},
             goods_advertise = #{goodsAdvertise},
@@ -182,7 +181,11 @@
             AND version = #{version}
     </update>
 
-    <!--修改商品状态信息-->
+    <!--修改商品状态信息
+    <if test="goodsInventory lte 0">
+            goods_state_id = 0,
+        </if>
+    -->
     <update id="updateGoodsState" parameterType="java.util.List">
         <foreach collection="listUpdate" item="item" index="index" open="" separator=";" close=";" >
             UPDATE t_info_goods
@@ -210,14 +213,13 @@
         SELECT
             a.goods_id goodsId
         FROM
-            t_info_goods a
-            LEFT JOIN t_info_order_deepen b ON a.goods_id = b.goods_id
+            t_info_order_deepen a
         WHERE
-            a.goods_id IN
-            <foreach collection="" item="item" index="index" open="(" separator="," close=")">
+            a.is_delete = 0
+            AND a.goods_id IN
+            <foreach collection="listGoodsId" item="item" index="index" open="(" separator="," close=")">
                 #{item}
             </foreach>
-        GROUP BY a.goods_id
     </select>
 
     <!--删除商品(其首页轮播图和热门一起删除)[实测发现根据一条返回是否删除成功]-->

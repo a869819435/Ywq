@@ -169,11 +169,13 @@ public class UserService {
                 userIdOfManager.add(roles.get(i).getUserId());
             }
         }
-        //获取有门店的店长编号
-        List<String> havingStore = userDao.getHavingStore(userIdOfManager);
-        if( havingStore != null || havingStore.size() != 0 ){
-            String errorInformation = StringUtils.join(havingStore.toString(),",");
-            return AppResponse.versionError("店长编号" + errorInformation + "有绑定门店");
+        if (userIdOfManager != null && userIdOfManager.size() != 0 ){
+            //获取有门店的店长编号
+            List<String> havingStore = userDao.getHavingStore(userIdOfManager);
+            if( havingStore != null || havingStore.size() != 0 ){
+                String errorInformation = StringUtils.join(havingStore.toString(),",");
+                return AppResponse.versionError("店长编号" + errorInformation + "有绑定门店");
+            }
         }
         //删除用户
         int count = userDao.deleteUser(listUserId,updateUser);

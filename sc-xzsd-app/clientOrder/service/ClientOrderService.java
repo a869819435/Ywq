@@ -191,17 +191,16 @@ public class ClientOrderService {
         if (OrderStateEnums.FINISHED_NO.getType().equals(orderStateId) || OrderStateEnums.DELETED.getType().equals(orderStateId)){
             List<OrderGoods> orderGoodsList = clientOrderDao.getOrderGoods(orderId);
             for (OrderGoods i : orderGoodsList){
-                i.setGoodsInventory(i.getGoodsInventory() + i.getGoodsCount());
                 i.setUpdateUser(updateUser);
             }
             int countGoods = 0;
             //当更改的状态为已完成的时候,销售量增加
             if ( OrderStateEnums.FINISHED_NO.getType().equals(orderStateId) ){
-                countGoods = clientOrderDao.addGoodsInventory(orderGoodsList);
+                countGoods = clientOrderDao.updateGoodsSales(orderGoodsList);
             }
             //当更改的状态为取消订单时,库存增加
             if ( OrderStateEnums.DELETED.getType().equals(orderStateId) ){
-                countGoods = clientOrderDao.updateGoodsSales(orderGoodsList);
+                countGoods = clientOrderDao.addGoodsInventory(orderGoodsList);
             }
             if (countGoods == 0){
                 return AppResponse.versionError("操作失败，请重试");

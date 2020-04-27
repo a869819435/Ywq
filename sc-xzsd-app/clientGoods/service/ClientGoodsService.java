@@ -51,6 +51,7 @@ public class ClientGoodsService {
         if(goods == null){
             return AppResponse.notFound("该商品已下架！");
         }
+        goods.setGoodsId(goodsId);
         return AppResponse.success("查询商品详情成功！",goods);
     }
 
@@ -99,7 +100,7 @@ public class ClientGoodsService {
                 goodsEvaluate.get(parent).getImageList().add(url);
             }
         });
-        return AppResponse.success("查询商品评价成功",goodsEvaluate);
+        return AppResponse.success("查询商品评价成功",getPageInfo(goodsEvaluate));
     }
 
     /**

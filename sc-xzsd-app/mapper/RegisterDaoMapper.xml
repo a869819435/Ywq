@@ -6,7 +6,8 @@
     <select id="countInfo" parameterType="com.xzsd.app.register.entity.RegisterInfo" resultType="int">
         SELECT
         <if test="inviteCode != null and inviteCode != '' ">
-            IF( (SELECT COUNT(invite_code) FROM t_info_store WHERE invite_code = #{inviteCode})=0,4,0) +
+            IF( (SELECT COUNT(invite_code) FROM t_info_store WHERE invite_code = #{inviteCode}
+            AND is_delete = 0 )=0,4,0) +
         </if>
             IF(count(user_acct) != 0,1,0 ) +
             IF( (select count(phone) from t_sys_user where is_delete = 0

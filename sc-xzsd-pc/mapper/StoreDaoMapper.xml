@@ -11,6 +11,7 @@
         WHERE
             is_delete = 0
             AND user_id = #{userId}
+            AND role = '2'
     </select>
 
     <!--统计电话数量-->
@@ -59,7 +60,8 @@
     <select id="countStoreInfo" parameterType="com.xzsd.pc.store.entity.Store" resultType="int">
         SELECT
             IF( COUNT(business_code)!= 0,1,0 ) +
-            IF( (SELECT COUNT(user_id) FROM t_sys_user WHERE is_delete = 0 AND user_id = #{userId})=0,2,0 ) +
+            IF( (SELECT COUNT(user_id) FROM t_sys_user WHERE is_delete = 0
+                    AND user_id = #{userId} AND role = '2' )=0,2,0 ) +
             IF( (SELECT COUNT(phone) FROM t_info_store WHERE is_delete = 0 AND phone = #{phone}
                 <if test="storeId != null and storeId != '' ">
                     AND store_id != #{storeId}

@@ -22,6 +22,9 @@
             UPDATE t_info_goods
             SET
                 goods_inventory = #{item.goodsInventory},
+                <if test="item.goodsInventory lte 0">
+                    goods_state_id = 0
+                </if>
                 update_time = NOW(),
                 update_user = #{item.updateUser},
                 version = version + 1
@@ -145,23 +148,23 @@
     </select>
 
     <!--获取订单里的商品信息-->
-    <select id="getOrderGoods" parameterType="java.lang.String" resultType="com.xzsd.app.clientOrder.entity.ClientOrderGoods">
+    <select id="getOrderGoods" parameterType="java.lang.String" resultType="com.xzsd.app.clientOrder.entity.OrderGoods">
         SELECT
-            b.goods_count cartGoodsCount,
+            b.goods_count goodsCount,
             b.goods_id goodsId
         FROM
             t_info_order a
-            LEFT JOIN t_info_order_deepen b ON a.orede
+            LEFT JOIN t_info_order_deepen b ON a.order_id = b.order_id
         WHERE
-            order_id = #{orderId}
+            a.order_id = #{orderId}
     </select>
 
-    <!--更新商品库存-->
+    <!--添加商品库存-->
     <update id="addGoodsInventory" parameterType="java.util.List">
         <foreach collection="orderGoodsList" item="item" index="index" open="" separator=";" close=";">
             UPDATE t_info_goods
             SET
-                goods_inventory =  #{item.goodsInventory},
+                goods_inventory = goods_inventory + #{item.goodsCount},
                 update_time = NOW(),
                 update_user = #{item.updateUser},
                 version = version + 1
@@ -170,7 +173,7 @@
         </foreach>
     </update>
 
-    <!--更新商品库存-->
+    <!--更新商品销售量-->
     <update id="updateGoodsSales" parameterType="java.util.List">
         <foreach collection="orderGoodsList" item="item" index="index" open="" separator=";" close=";">
             UPDATE t_info_goods

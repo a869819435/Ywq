@@ -185,7 +185,6 @@ public class GoodsService {
     /**
      * 更新商品状态
      * @param goods
-     * @param goods
      * @return
      */
     @Transactional(rollbackFor = Exception.class)

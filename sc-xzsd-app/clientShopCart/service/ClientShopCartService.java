@@ -36,19 +36,20 @@ public class ClientShopCartService {
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse addShoppingCart(ClientShopCart clientShopCart){
+        String nowLogin = SecurityUtils.getCurrentUserId();
         //查看该商品是否已在购物车中
-        ClientShopCart cartGoodsCount = clientShopCartDao.isGoodsInShopCart(clientShopCart.getGoodsId());
+        ClientShopCart cartGoodsCount = clientShopCartDao.isGoodsInShopCart(clientShopCart.getGoodsId(),nowLogin);
         int count = 0;
         //若在购物车直接新增商品个数,不在则新增购物车
         if (cartGoodsCount == null || cartGoodsCount.getCartGoodsCount() == 0){
             clientShopCart.setShopCartId("gwc" + StringUtil.getCommonCode(2));
-            clientShopCart.setCreateUser(SecurityUtils.getCurrentUserId());
+            clientShopCart.setCreateUser(nowLogin);
             if(clientShopCart.getCartGoodsCount() < MIN_CART_GOODS_COUNT ){
                 clientShopCart.setCartGoodsCount( MIN_CART_GOODS_COUNT );
             }
             count = clientShopCartDao.addShoppingCart(clientShopCart);
         }else {
-            clientShopCart.setUpdateUser(SecurityUtils.getCurrentUserId());
+            clientShopCart.setUpdateUser(nowLogin);
             clientShopCart.setShopCartId(cartGoodsCount.getShopCartId());
             clientShopCart.setCartGoodsCount(clientShopCart.getCartGoodsCount() + cartGoodsCount.getCartGoodsCount());
             count = clientShopCartDao.updateShoppingCart(clientShopCart);

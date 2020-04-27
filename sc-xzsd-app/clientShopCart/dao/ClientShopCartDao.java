@@ -21,7 +21,7 @@ public interface ClientShopCartDao {
      * @param goodsId
      * @return
      */
-    ClientShopCart isGoodsInShopCart(@Param("goodsId") String goodsId);
+    ClientShopCart isGoodsInShopCart(@Param("goodsId") String goodsId,@Param("nowLogin")String nowLogin);
 
     /**
      * 新增购物车接口

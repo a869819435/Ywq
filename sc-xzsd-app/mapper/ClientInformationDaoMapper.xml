@@ -10,13 +10,15 @@
             t_info_store
         WHERE
             invite_code = #{inviteCode}
+            AND is_delete = 0
     </select>
     
     <!--修改客户邀请码-->
     <update id="updateClientInvite" parameterType="java.lang.String">
         UPDATE t_info_client
         SET
-            invite_code = #{inviteCode}
+            invite_code = #{inviteCode},
+            update_time = NOW()
         WHERE
             user_id = #{userId}
     </update>

@@ -66,14 +66,14 @@ public interface ClientOrderDao {
      * @param orderGoodsList
      * @return
      */
-    int addGoodsInventory(@Param(value = "updateGoods") List<OrderGoods> orderGoodsList);
+    int addGoodsInventory(@Param(value = "orderGoodsList") List<OrderGoods> orderGoodsList);
 
     /**
      * 更新商品库存
      * @param orderGoodsList
      * @return
      */
-    int updateGoodsSales(@Param(value = "updateGoods") List<OrderGoods> orderGoodsList);
+    int updateGoodsSales(@Param(value = "orderGoodsList") List<OrderGoods> orderGoodsList);
 
     /**
      * 更新订单状态接口
