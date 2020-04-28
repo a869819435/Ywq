@@ -28,6 +28,13 @@ public interface UserInformationDao {
     UserInfo getUser(@Param("userId") String userId, @Param("role") String role);
 
     /**
+     * 获取用户密码
+     * @param userId
+     * @return
+     */
+    String getUserPassword(@Param("userId") String userId);
+
+    /**
      * 修改用户密码
      * @param userInfo
      * @return

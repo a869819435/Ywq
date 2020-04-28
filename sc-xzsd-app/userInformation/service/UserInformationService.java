@@ -56,13 +56,13 @@ public class UserInformationService {
         userInfo.setUserId(SecurityUtils.getCurrentUserId());
         //需要校验原密码是否正确
         String oldPassword = userInfo.getUserPassword();
-        if( null != oldPassword && !"".equals(oldPassword) ) {
+        if ( null != oldPassword && !"".equals(oldPassword) ) {
             //获取用户原信息
-            UserInfo userDetail = userInformationDao.getUser(userInfo.getUserId(),"");
-            if(null == userDetail) {
+            String userDetail = userInformationDao.getUserPassword(userInfo.getUserId());
+            if (null == userDetail || "".equals(userDetail)) {
                 return AppResponse.versionError("用户不存在或已被删除！");
             } else {
-                if(PasswordUtils.equalsPassword(oldPassword,userDetail.getUserPassword())) {
+                if ( !PasswordUtils.equalsPassword(oldPassword,userDetail) ){
                     return AppResponse.versionError("原密码不匹配，请重新输入！");
                 }
             }

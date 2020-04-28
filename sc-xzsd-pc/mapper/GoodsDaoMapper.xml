@@ -206,10 +206,11 @@
 
     <!--查看选中的商品是否在订单中-->
     <select id="goodsIdInOrder" parameterType="java.lang.String" resultType="java.lang.String">
-        SELECT
-            a.goods_id goodsId
+        SELECT DISTINCT
+            b.goods_name goodsName
         FROM
             t_info_order_deepen a
+            LEFT JOIN t_info_goods b ON a.goods_id = b.goods_id
         WHERE
             a.is_delete = 0
             AND a.goods_id IN

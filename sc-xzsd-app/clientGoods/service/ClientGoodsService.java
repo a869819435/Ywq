@@ -49,7 +49,7 @@ public class ClientGoodsService {
     public AppResponse getGoods(String goodsId){
         ClientGoodsInfo goods = clientGoodsDao.getGoods(goodsId);
         if(goods == null){
-            return AppResponse.notFound("该商品已下架！");
+            return AppResponse.notFound("该商品已下架或者已售罄！");
         }
         goods.setGoodsId(goodsId);
         return AppResponse.success("查询商品详情成功！",goods);
@@ -120,10 +120,10 @@ public class ClientGoodsService {
     public AppResponse listGetClassGoods(String classifyId){
         //获取全部的二级分类以及商品
         List<ClientGoodsClassify> allTwoClassifyList = clientGoodsDao.listGetClassGoods(classifyId);
-        int sum = allTwoClassifyList.size();
-        if(sum == 0){
-            return AppResponse.versionError("获取商品二级分类失败");
+        if( allTwoClassifyList == null || allTwoClassifyList.size() == 0){
+            return AppResponse.versionError("当前分类没有对应的二级分类");
         }
+        int sum = allTwoClassifyList.size();
         List<ClientTwoClassify> twoClassify = new ArrayList<ClientTwoClassify>();
         //创建映射，获取所有商品对应的二级分类
         Map<String ,Integer> map = new HashMap<>();

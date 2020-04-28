@@ -55,7 +55,7 @@ public class ClientOrderService {
         //获取对应编号的商品数量
         List<String> clientGoodsNums = Arrays.asList(clientOrderGoods.getClientGoodsNum().split(","));
         //获取选中的商品库存
-        List<ClientGoodsInfo> goodsInventorys = clientOrderDao.getGoodsInventory(goodsIds);
+        List<ClientGoodsInfo> goodsInventories = clientOrderDao.getGoodsInventory(goodsIds);
         //记录所有商品购买后的剩余库存
         List<ClientGoodsInfo> updateGoods = new ArrayList<>();
         //存储库存不足的商品的排位
@@ -67,9 +67,9 @@ public class ClientOrderService {
         }
         boolean flag = true;
         //检测购买数量是否大于库存,同时记录购买后的商品库存
-        for (int i = 0 ; i < goodsInventorys.size() ;i++ ){
-            int parent = map.get(goodsInventorys.get(i).getGoodsId());
-            int ans = goodsInventorys.get(i).getGoodsInventory() - Integer.valueOf(clientGoodsNums.get(parent));
+        for (int i = 0 ; i < goodsInventories.size() ;i++ ){
+            int parent = map.get(goodsInventories.get(i).getGoodsId());
+            int ans = goodsInventories.get(i).getGoodsInventory() - Integer.valueOf(clientGoodsNums.get(parent));
             if( ans < 0 ){
                 failureGoods.add( i + 1 );
                 flag = false;

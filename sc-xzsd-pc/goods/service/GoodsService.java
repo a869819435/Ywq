@@ -232,8 +232,9 @@ public class GoodsService {
         //查看选中的商品是否在订单中
         List<String> goodsInOrder = goodsDao.goodsIdInOrder(listGoodsId);
         if( goodsInOrder != null && goodsInOrder.size() != 0  ){
-            return AppResponse.versionError("以下" +
-                   StringUtils.join(goodsInOrder.toString(),",") + "商品还在订单中，无法删除");
+            String error = StringUtils.join(goodsInOrder);
+            System.out.println(error);
+            return AppResponse.versionError("书名:" + error + "商品还在订单中，无法删除");
         }
         //获取当前登录人的id
         String updateUser = SecurityUtils.getCurrentUserId();

@@ -41,7 +41,7 @@ public class ClientHomeService {
      * @return
      */
     public AppResponse listHotGoods(){
-        int showNum = clientHomeDao.getHotGoodsShowNum();
+        int showNum = clientHomeDao.getHotGoodsShowNum() - 1;
         List<ClientHomeGoodsInfo> clientHomeGoodsInfos = clientHomeDao.listHotGoods(showNum);
         if(clientHomeGoodsInfos == null ){
             AppResponse.notFound("未查到热门商品信息！");

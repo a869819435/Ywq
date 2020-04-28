@@ -53,6 +53,17 @@
             AND a.is_delete = 0
     </select>
 
+    <!--获取用户密码-->
+    <select id="getUserPassword" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT
+            user_password
+        FROM
+            t_sys_user
+        WHERE
+            is_delete = 0
+            AND user_id = #{userId}
+    </select>
+
     <!--修改用户密码-->
     <update id="updateUserPassword" parameterType="com.xzsd.app.register.entity.RegisterInfo">
         UPDATE t_sys_user
