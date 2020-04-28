@@ -132,9 +132,9 @@ public class GoodsController {
      * @Date 2020-03-26
      */
     @PostMapping("updateGoodsShelfState")
-    public AppResponse updateGoodsState(Goods goods){
+    public AppResponse updateGoodsState(Goods goods,String goodsInventory){
         try{
-            return goodsService.updateGoodsState(goods);
+            return goodsService.updateGoodsState(goods,goodsInventory);
         }catch (Exception e){
             logger.error("修改商品状态失败",e);
             System.out.println(e.toString());

@@ -59,6 +59,13 @@ public interface GoodsClassifyDao {
     int countNextClassify(@Param("classifyId") String classifyId);
 
     /**
+     * 查询该商品分类是否有商品
+     * @param classifyId
+     * @return
+     */
+    int countNextGoods(@Param("classifyId") String classifyId);
+
+    /**
      * 删除商品分类
      * @param classifyId
      * @param updateUser

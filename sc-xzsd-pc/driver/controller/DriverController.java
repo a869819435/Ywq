@@ -35,10 +35,10 @@ public class DriverController {
      * @Date 2020-04-12
      */
     @PostMapping("addDriver")
-    public AppResponse addDriver(Driver driver, String imagePath){
+    public AppResponse addDriver(Driver driver, String imagePath,String nowRole){
         try {
             driver.setUserImage(imagePath);
-            return driverService.addDriver(driver);
+            return driverService.addDriver(driver,nowRole);
         }catch (Exception e){
             logger.error("司机新增失败",e);
             System.out.println(e.toString());
@@ -90,10 +90,10 @@ public class DriverController {
      * @Date 2020-04-12
      */
     @PostMapping("updateDriver")
-    public AppResponse updateDriver(Driver driver,String imagePath){
+    public AppResponse updateDriver(Driver driver,String imagePath,String nowRole){
         try{
             driver.setUserImage(imagePath);
-            return driverService.updateDriver(driver);
+            return driverService.updateDriver(driver,nowRole);
         }catch (Exception e){
             logger.error("修改司机信息失败",e);
             System.out.println(e.toString());
@@ -109,9 +109,9 @@ public class DriverController {
      * @Date 2020-04-12
      */
     @RequestMapping("deleteDriver")
-    public AppResponse deleteDriver(String driverId){
+    public AppResponse deleteDriver(String driverId,String nowRole){
         try {
-            return driverService.deleteDriver(driverId);
+            return driverService.deleteDriver(driverId,nowRole);
         }catch (Exception e){
             logger.error("删除司机失败",e);
             System.out.println(e.toString());

@@ -110,9 +110,9 @@ public class GoodsClassifyController {
      * @Date 2020-03-29
      */
     @PostMapping("deleteGoodsClassify")
-    public AppResponse deleteGoodsClassify(String classifyId){
+    public AppResponse deleteGoodsClassify(String classifyId,String classifyParent){
         try{
-            return goodsClassifyService.deleteGoodsClassify(classifyId);
+            return goodsClassifyService.deleteGoodsClassify(classifyId,classifyParent);
         }catch (Exception e){
             logger.error("删除商品分类信息失败",e);
             System.out.println(e.toString());

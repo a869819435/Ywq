@@ -127,6 +127,17 @@
             AND is_delete = 0
     </select>
 
+    <!--查询当前分类是否有商品-->
+    <select id="countNextGoods" parameterType="java.lang.String" resultType="int" >
+        SELECT
+            COUNT(two_classify_id)
+        FROM
+            t_info_goods
+        WHERE
+            is_delete = 0
+            AND two_classify_id = #{classifyId}
+    </select>
+
     <!--删除商品分类-->
     <update id="deleteGoodsClassify" parameterType="java.lang.String">
         UPDATE t_info_goods_classify

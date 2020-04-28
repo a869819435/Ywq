@@ -66,7 +66,7 @@ public class OrderService {
         String updateUser = SecurityUtils.getCurrentUserId();
         //处理订单状态修改涉及的商品信息修改(商品销量、商品库存)
         String error = solveOrderGoodsChange(orders,orderStateId,updateUser);
-        if ( error != null ) {
+        if ( error != null && !"".equals(error) ) {
             return AppResponse.versionError(error);
         }
         //将所有涉及修改的订单状态信息放入一个list里
@@ -98,8 +98,6 @@ public class OrderService {
         List<OrderGoods> orderGoods = orderDao.getOrderGoods(orders);
         //存储需要处理库存的订单里的商品信息
         List<OrderGoods> goodsForInventory = new ArrayList<>();
-        //存储状态为已完成的订单里的商品信息
-        List<OrderGoods> goodsForSales = new ArrayList<>();
         //商品库存处理方式标记
         boolean flag = true;
         //当要改变的状态为已取消时,需要将订单内的商品库存加回去
@@ -108,6 +106,10 @@ public class OrderService {
                 OrderGoods temp = orderGoods.get(i);
                 //获取订单状态
                 String oldOrderState = temp.getOrderStateId();
+                //当被改变的订单状态时已完成的(4,5)，需要销量减少
+                if (oldOrderState.compareTo(OrderStateEnums.FINISHED_NO.getType()) >= 0 ){
+                    return "不能改变已完成的订单状态,订单编号:"+ temp.getOrderId();
+                }
                 //赋值更新者
                 temp.setUpdateUser(updateUser);
                 //排除重复取消,防止库存重复增加
@@ -116,10 +118,6 @@ public class OrderService {
                 }else {
                     goodsForInventory.add(temp);
                 }
-                //当被改变的订单状态时已完成的(4,5)，需要销量减少
-                if (oldOrderState.compareTo(OrderStateEnums.FINISHED_NO.getType()) >= 0 ){
-                    goodsForSales.add(temp);
-                }
             }
         }else{
             //当要改变的状态不为已取消时,需要将订单为已取消的订单选出来处理库存
@@ -127,15 +125,15 @@ public class OrderService {
                 OrderGoods temp = orderGoods.get(i);
                 //获取订单状态
                 String oldOrderState = temp.getOrderStateId();
+                //当被改变的订单状态时已完成的(4,5)，需要销量减少
+                if (oldOrderState.compareTo(OrderStateEnums.FINISHED_NO.getType()) >= 0 ){
+                    return "不能改变已完成的订单状态,订单编号:"+ temp.getOrderId();
+                }
                 //赋值更新者
                 temp.setUpdateUser(updateUser);
                 //获取被改变的订单状态为取消订单的
                 if (oldOrderState.equals(OrderStateEnums.DELETED.getType())){
                     goodsForInventory.add(temp);
-                }
-                //当被改变的订单状态时已完成的(4,5)，需要销量减少
-                if (oldOrderState.compareTo(OrderStateEnums.FINISHED_NO.getType()) >= 0 ){
-                    goodsForSales.add(temp);
                 }
             }
             flag = false;
@@ -147,14 +145,14 @@ public class OrderService {
                 return error;
             }
         }
-        //有需要改变销售量的商品
-        if (goodsForSales != null && goodsForSales.size() != 0 ){
-            //更新商品销量
-            int countUpdateGoodsSales = orderDao.updateOrderGoodsSales(goodsForSales);
-            if (countUpdateGoodsSales == 0){
-                return "修改订单状态失败,请重试。";
-            }
-        }
+//        //有需要改变销售量的商品
+//        if (goodsForSales != null && goodsForSales.size() != 0 ){
+//            //更新商品销量
+//            int countUpdateGoodsSales = orderDao.updateOrderGoodsSales(goodsForSales);
+//            if (countUpdateGoodsSales == 0){
+//                return "修改订单状态失败,请重试。";
+//            }
+//        }
         return null;
     }
 

@@ -174,12 +174,19 @@ public class GoodsClassifyService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public AppResponse deleteGoodsClassify(String classifyId){
+    public AppResponse deleteGoodsClassify(String classifyId,String classifyParent){
         //查看当前分类是否存在子类
         int countNextClassify = goodsClassifyDao.countNextClassify(classifyId);
         if(countNextClassify != 0){
             //存在则不可以删除
             return AppResponse.versionError("删除分类信息失败，该分类有子分类");
+        }
+        if( !ROOT_ID.equals(classifyParent) ){
+            int countNextGoods = goodsClassifyDao.countNextGoods(classifyId);
+            if(countNextGoods == 0){
+                //存在则不可以删除
+                return AppResponse.versionError("删除分类信息失败，该分类有对应商品");
+            }
         }
         //获取当前登录人的id
         String updateUser = SecurityUtils.getCurrentUserId();

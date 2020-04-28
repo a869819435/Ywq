@@ -39,7 +39,7 @@ public class UserService {
         //获取用户id
         String createUser = SecurityUtils.getCurrentUserId();
         //获取当前登录角色
-        String nowRole = userDao.getUserRole(createUser);
+        String nowRole = user.getNowRole();
         if (nowRole.equals(user.getRole()) ){
             return AppResponse.versionError("您的权限不足");
         }
@@ -99,7 +99,7 @@ public class UserService {
     public AppResponse updateUser(User user){
         //获取用户id
         String updateUser = SecurityUtils.getCurrentUserId();
-        String nowRole = userDao.getUserRole(updateUser);
+        String nowRole = user.getNowRole();;
         if (nowRole.equals(user.getRole()) ){
             return AppResponse.versionError("您的权限不足");
         }
@@ -135,7 +135,7 @@ public class UserService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public AppResponse deleteUser(String userId){
+    public AppResponse deleteUser(String userId,String role,String nowRole){
         List<String> listUserId = Arrays.asList(userId.split(","));
         //获取用户id
         String updateUser = SecurityUtils.getCurrentUserId();
@@ -145,28 +145,17 @@ public class UserService {
         getRoleUserId.add(updateUser);
         getRoleUserId.addAll(listUserId);
         //获取所有角色
-        List<User> roles = userDao.getAllRole(getRoleUserId);
+        List<String> roles = Arrays.asList(role.split(","));
         //记录角色编号为2的用户
         List<String> userIdOfManager = new ArrayList<>();
-        String nowRole = "";
-        for (int i = 0 ; i < getRoleUserId.size() ; i++){
-            //获取当前登录角色编号
-            if(updateUser.equals(roles.get(i).getUserId())){
-                nowRole = roles.get(i).getRole();
-            }
-        }
         for (int i = 0 ; i < roles.size() ; i++ ){
-            //自己不跟自己比
-            if (updateUser.equals(roles.get(i).getUserId())){
-                continue;
-            }
             //管理员不能删管理员
-            if (roles.get(i).getRole().equals(nowRole)){
-                return AppResponse.versionError("删除账号为" + roles.get(i).getUserAcct() + "的用户权限不足");
+            if (roles.get(i).equals(nowRole)){
+                return AppResponse.versionError("删除账号为" + listUserId.get(i) + "的用户权限不足");
             }
             //是店长的用户
-            if (roles.get(i).getRole().equals(RoleEnums.MANAGE.getType())){
-                userIdOfManager.add(roles.get(i).getUserId());
+            if (roles.get(i).equals(RoleEnums.MANAGE.getType())){
+                userIdOfManager.add(listUserId.get(i));
             }
         }
         if (userIdOfManager != null && userIdOfManager.size() != 0 ){

@@ -6,6 +6,8 @@ import com.google.gson.reflect.TypeToken;
 import com.neusoft.core.restful.AppResponse;
 import com.neusoft.security.client.utils.SecurityUtils;
 import com.neusoft.util.JsonUtils;
+import com.qcloud.cos.utils.StringUtils;
+import com.xzsd.pc.goods.enums.GoodsStateEnums;
 import com.xzsd.pc.goodsClassify.entity.GoodsClassifyList;
 import com.xzsd.pc.utils.RedisUtil;
 import com.neusoft.util.StringUtil;
@@ -79,12 +81,12 @@ public class GoodsService {
         if(classifyId == null || "".equals(classifyId)){
             classifyId = "0";
         }
-        List<GoodsClassify> goodsClassifys = goodsDao.listGoodsClassify(classifyId);
-        if(goodsClassifys == null || 0 == goodsClassifys.size()){
+        List<GoodsClassify> goodsClassifies = goodsDao.listGoodsClassify(classifyId);
+        if(goodsClassifies == null || 0 == goodsClassifies.size()){
             return AppResponse.versionError("查询商品分类下拉框失败！");
         }
         GoodsClassifyList goodsClassifyList = new GoodsClassifyList();
-        goodsClassifyList.setGoodsClassifyList(goodsClassifys);
+        goodsClassifyList.setGoodsClassifyList(goodsClassifies);
         return AppResponse.success("查询商品分类下拉框成功！",goodsClassifyList);
     }
 
@@ -188,10 +190,12 @@ public class GoodsService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public AppResponse updateGoodsState(Goods goods){
+    public AppResponse updateGoodsState(Goods goods,String goodsInventory){
         //取出商品编号和版本号转成数组
         List<String> listGoodsId = Arrays.asList(goods.getGoodsId().split(","));
         List<String> listVersion = Arrays.asList(goods.getVersion().split(","));
+        //取出要修改的商品的库存
+        List<String> goodsInventories = Arrays.asList(goodsInventory.split(","));
         List<Goods> listUpdate = new ArrayList<>();
         //获取要修改的状态
         String goodsStateId = goods.getGoodsStateId();
@@ -204,6 +208,9 @@ public class GoodsService {
             goods1.setVersion(listVersion.get(i));
             goods1.setGoodsStateId(goodsStateId);
             goods1.setUpdateUser(updateUser);
+            if (goodsStateId.equals(GoodsStateEnums.ON_SALE.getType()) && Integer.valueOf(goodsInventories.get(i)) <= 0){
+                goods1.setGoodsStateId(GoodsStateEnums.SOLD_OUT.getType());
+            }
             listUpdate.add(goods1);
         }
         int count = goodsDao.updateGoodsState(listUpdate);
@@ -226,7 +233,7 @@ public class GoodsService {
         List<String> goodsInOrder = goodsDao.goodsIdInOrder(listGoodsId);
         if( goodsInOrder != null && goodsInOrder.size() != 0  ){
             return AppResponse.versionError("以下" +
-                   String.join(",",goodsInOrder) + "商品还在订单中，无法删除");
+                   StringUtils.join(goodsInOrder.toString(),",") + "商品还在订单中，无法删除");
         }
         //获取当前登录人的id
         String updateUser = SecurityUtils.getCurrentUserId();

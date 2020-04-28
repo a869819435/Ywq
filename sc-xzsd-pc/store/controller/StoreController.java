@@ -34,9 +34,9 @@ public class StoreController {
      * @Date 2020-04-12
      */
     @PostMapping("addStore")
-    public AppResponse addStore(Store store){
+    public AppResponse addStore(Store store,String nowRole){
         try {
-            return storeService.addStore(store);
+            return storeService.addStore(store,nowRole);
         }catch (Exception e){
             logger.error("门店新增失败",e);
             System.out.println(e.toString());
@@ -108,9 +108,9 @@ public class StoreController {
      * @Date 2020-04-12
      */
     @RequestMapping("deleteStore")
-    public AppResponse deleteStore(String storeId){
+    public AppResponse deleteStore(String storeId,String nowRole){
         try {
-            return storeService.deleteStore(storeId);
+            return storeService.deleteStore(storeId,nowRole);
         }catch (Exception e){
             logger.error("删除门店失败",e);
             System.out.println(e.toString());

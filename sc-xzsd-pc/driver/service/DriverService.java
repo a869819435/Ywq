@@ -39,12 +39,11 @@ public class DriverService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class )
-    public AppResponse addDriver(Driver driver){
+    public AppResponse addDriver(Driver driver,String nowRole){
         //获取当前登录人
         driver.setCreateUser(SecurityUtils.getCurrentUserId());
-        //获取当前登录角色
-        String nowRole = userDao.getUserRole(driver.getCreateUser());
-        if (  RoleEnums.MANAGE.equals(nowRole) ){
+        //店长无权新增司机信息
+        if (  RoleEnums.MANAGE.getType().equals(nowRole) ){
             return AppResponse.versionError("您无权新增司机！");
         }
         User user = new User();
@@ -108,12 +107,11 @@ public class DriverService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public AppResponse updateDriver(Driver driver){
+    public AppResponse updateDriver(Driver driver,String nowRole){
         //获取当前登录人
         driver.setUpdateUser(SecurityUtils.getCurrentUserId());
-        //获取当前登录角色
-        String nowRole = userDao.getUserRole(driver.getUpdateUser());
-        if (  RoleEnums.MANAGE.equals(nowRole) ){
+        //店长无权修改司机信息
+        if (  RoleEnums.MANAGE.getType().equals(nowRole) ){
             return AppResponse.versionError("您无权修改司机信息！");
         }
         User user = new User();
@@ -151,12 +149,11 @@ public class DriverService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public AppResponse deleteDriver(String driverId){
+    public AppResponse deleteDriver(String driverId,String nowRole){
         //获取当前登录人id
         String updateUser = SecurityUtils.getCurrentUserId();
-        //获取当前登录角色
-        String nowRole = userDao.getUserRole(updateUser);
-        if (  RoleEnums.MANAGE.equals(nowRole) ){
+        //店长无权删除司机信息
+        if (  RoleEnums.MANAGE.getType().equals(nowRole) ){
             return AppResponse.versionError("您无权删除司机！");
         }
         List<String> listDriverId = Arrays.asList(driverId.split(","));

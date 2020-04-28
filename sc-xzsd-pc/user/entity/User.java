@@ -49,9 +49,9 @@ public class User {
      */
     private String role;
     /**
-     * 用户角色名称
+     * 当前登录的角色编号
      */
-    private String roleName;
+    private String nowRole;
     /**
      * 删除标记
      */
@@ -157,12 +157,12 @@ public class User {
         this.role = role;
     }
 
-    public String getRoleName() {
-        return roleName;
+    public String getNowRole() {
+        return nowRole;
     }
 
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
+    public void setNowRole(String nowRole) {
+        this.nowRole = nowRole;
     }
 
     public int getIsDelete() {

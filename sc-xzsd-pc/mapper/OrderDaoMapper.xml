@@ -110,22 +110,22 @@
         </foreach>
     </update>
 
-    <!--更新所选订单中的销售量-->
-    <update id="updateOrderGoodsSales" parameterType="java.util.List">
-        <foreach collection="goods" item="item" index="index" open="" separator=";" close=";">
-            UPDATE t_info_goods
-            <set>
-                goods_sales = goods_sales - #{item.goodsCount},
-                update_time = NOW(),
-                update_user = #{item.updateUser},
-                version = version + 1
-            </set>
-            <where>
-                goods_id = #{item.goodsId,jdbcType=VARCHAR}
-                AND version = #{item.version}
-            </where>
-        </foreach>
-    </update>
+<!--    &lt;!&ndash;更新所选订单中的销售量&ndash;&gt;-->
+<!--    <update id="updateOrderGoodsSales" parameterType="java.util.List">-->
+<!--        <foreach collection="goods" item="item" index="index" open="" separator=";" close=";">-->
+<!--            UPDATE t_info_goods-->
+<!--            <set>-->
+<!--                goods_sales = goods_sales - #{item.goodsCount},-->
+<!--                update_time = NOW(),-->
+<!--                update_user = #{item.updateUser},-->
+<!--                version = version + 1-->
+<!--            </set>-->
+<!--            <where>-->
+<!--                goods_id = #{item.goodsId,jdbcType=VARCHAR}-->
+<!--                AND version = #{item.version}-->
+<!--            </where>-->
+<!--        </foreach>-->
+<!--    </update>-->
 
     <!--修改订单状态-->
     <update id="updateOrderState" parameterType="java.util.List">

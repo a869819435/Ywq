@@ -28,21 +28,17 @@ public class StoreService {
     @Resource
     private StoreDao storeDao;
 
-    @Resource
-    private UserDao userDao;
-
     /**
      * 新增门店
      * @param store
      * @return
      */
     @Transactional(rollbackFor = Exception.class )
-    public AppResponse addStore(Store store){
+    public AppResponse addStore(Store store,String nowRole){
         //获取当前登录人
         store.setCreateUser(SecurityUtils.getCurrentUserId());
         //店长无权限新增
-        String nowRole = userDao.getUserRole(store.getCreateUser());
-        if (nowRole == RoleEnums.MANAGE.getType()){
+        if (RoleEnums.MANAGE.getType().equals(nowRole)){
             return AppResponse.versionError("您没有权限的不足");
         }
         //校验店长是否存在、电话是否已是别的店所用、用户是否已经是店长、营业执照是否已被使用
@@ -138,12 +134,11 @@ public class StoreService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public AppResponse deleteStore(String storeId){
+    public AppResponse deleteStore(String storeId,String nowRole){
         //获取当前登录人id
         String updateUser = SecurityUtils.getCurrentUserId();
         //店长无权限删除
-        String nowRole = userDao.getUserRole(updateUser);
-        if (nowRole == RoleEnums.MANAGE.getType()){
+        if (RoleEnums.MANAGE.getType().equals(nowRole)){
             return AppResponse.versionError("您没有权限的不足");
         }
         List<String> listStoreId = Arrays.asList(storeId.split(","));

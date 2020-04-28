@@ -181,11 +181,7 @@
             AND version = #{version}
     </update>
 
-    <!--修改商品状态信息
-    <if test="goodsInventory lte 0">
-            goods_state_id = 0,
-        </if>
-    -->
+    <!--修改商品状态信息-->
     <update id="updateGoodsState" parameterType="java.util.List">
         <foreach collection="listUpdate" item="item" index="index" open="" separator=";" close=";" >
             UPDATE t_info_goods

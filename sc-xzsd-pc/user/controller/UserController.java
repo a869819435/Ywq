@@ -112,9 +112,9 @@ public class UserController {
      * @Date 2020-03-25
      */
     @RequestMapping("deleteUser")
-    public AppResponse deleteUser(String userId){
+    public AppResponse deleteUser(String userId,String role,String nowRole){
         try {
-            return userService.deleteUser(userId);
+            return userService.deleteUser(userId,role,nowRole);
         }catch (Exception e){
             logger.error("删除用户失败",e);
             System.out.println(e.toString());
