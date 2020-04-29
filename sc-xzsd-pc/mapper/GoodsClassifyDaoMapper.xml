@@ -106,7 +106,6 @@
         SET
             classify_name = #{classifyName},
             classify_comment = #{classifyComment},
-            classify_parent = #{classifyParent},
             update_user = #{updateUser},
             update_time = NOW(),
             version = version + 1

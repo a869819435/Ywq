@@ -5,12 +5,12 @@
     <!--查询商品详情-->
     <select id="getGoods" parameterType="java.lang.String" resultType="com.xzsd.app.clientGoods.entity.ClientGoodsInfo">
         SELECT
---             goods_id goodsId,
             goods_name goodsName,
             isbn,
             goods_describe goodsDescribe,
             goods_price goodsPrice,
-            goods_evaluate_score goodsEvaluateScore,
+            goods_evaluate_score goodsEvaluateAllScore,
+            goods_evaluate_num goodsEvaluateNum,
             goods_image_path goodsImagePath,
             goods_author goodsAuthor,
             goods_press goodsPress

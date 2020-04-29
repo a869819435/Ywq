@@ -10,6 +10,7 @@ import com.xzsd.app.clientOrder.entity.ImageInfo;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +52,19 @@ public class ClientGoodsService {
         if(goods == null){
             return AppResponse.notFound("该商品已下架或者已售罄！");
         }
+        //获取总的评价人数
+        BigDecimal num = new BigDecimal(goods.getGoodsEvaluateNum());
+        //获取总评分
+        BigDecimal score = new BigDecimal(goods.getGoodsEvaluateAllScore());
+        //获取平均分
+        BigDecimal avg = BigDecimal.ZERO;
+        if (num.compareTo(BigDecimal.ZERO) != 0){
+            avg = score.divide(num);
+        }
+        //四舍五入到一位小数
+        avg = avg.setScale(1,BigDecimal.ROUND_HALF_UP);
+        //平均数转字符串
+        goods.setGoodsEvaluateScore(avg.toString());
         goods.setGoodsId(goodsId);
         return AppResponse.success("查询商品详情成功！",goods);
     }

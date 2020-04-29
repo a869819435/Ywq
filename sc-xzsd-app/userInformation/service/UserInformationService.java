@@ -32,17 +32,20 @@ public class UserInformationService {
         String userId = SecurityUtils.getCurrentUserId();
         //获取当前角色编号
         String role = userInformationDao.getUserRole(userId);
+        if(RoleEnums.ADMIN.getType().compareTo(role) >= 0){
+            role = null;
+        }
         //顺便判断此用户是否被删除
         if(role == null || "".equals(role)){
             return AppResponse.versionError("用户不存在或已被删除！");
         }
-        UserInfo client = userInformationDao.getUser(userId,role);
+        UserInfo userInfo = userInformationDao.getUser(userId,role);
         if(role.equals(RoleEnums.DRIVER.getType())){
-            client.setDriverName(client.getUserName());
+            userInfo.setDriverName(userInfo.getUserName());
         }
-        client.setRole(role);
-        client.setUserPassword(null);
-        return AppResponse.success("查询用户详细信息成功",client);
+        userInfo.setRole(role);
+        userInfo.setUserPassword(null);
+        return AppResponse.success("查询用户详细信息成功",userInfo);
     }
 
     /**

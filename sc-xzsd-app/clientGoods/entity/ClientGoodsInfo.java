@@ -54,6 +54,14 @@ public class ClientGoodsInfo {
     /**
      * 商品评价等级
      */
+    private String goodsEvaluateNum;
+    /**
+     * 商品评价等级
+     */
+    private String goodsEvaluateAllScore;
+    /**
+     * 商品评价等级
+     */
     private String goodsEvaluateScore;
     /**
      * 门店名称
@@ -150,6 +158,22 @@ public class ClientGoodsInfo {
 
     public void setGoodsPress(String goodsPress) {
         this.goodsPress = goodsPress;
+    }
+
+    public String getGoodsEvaluateNum() {
+        return goodsEvaluateNum;
+    }
+
+    public void setGoodsEvaluateNum(String goodsEvaluateNum) {
+        this.goodsEvaluateNum = goodsEvaluateNum;
+    }
+
+    public String getGoodsEvaluateAllScore() {
+        return goodsEvaluateAllScore;
+    }
+
+    public void setGoodsEvaluateAllScore(String goodsEvaluateAllScore) {
+        this.goodsEvaluateAllScore = goodsEvaluateAllScore;
     }
 
     public String getGoodsEvaluateScore() {

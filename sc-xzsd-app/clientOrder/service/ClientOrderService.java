@@ -28,8 +28,6 @@ import static com.neusoft.core.page.PageUtils.getPageInfo;
 @Service
 public class ClientOrderService {
 
-    static String ORDER_EVALUATED = "5";
-
     @Resource
     private ClientOrderDao clientOrderDao;
 
@@ -299,7 +297,8 @@ public class ClientOrderService {
             return AppResponse.versionError("新增商品评价失败！");
         }
         //修改订单状态和商品评价评分
-        int countUpdateEvaluate = clientOrderDao.updateEvaluateState(ans.getOrderId(),ORDER_EVALUATED,userId,goodsIds);
+        int countUpdateEvaluate = clientOrderDao.updateEvaluateState(ans.getOrderId()
+                ,OrderStateEnums.FINISHED_YES.getType(),userId,ans.getEvaluateInfoList());
         if (countUpdateEvaluate == 0){
             return AppResponse.versionError("订单状态修改失败或者商品评分更新失败！");
         }

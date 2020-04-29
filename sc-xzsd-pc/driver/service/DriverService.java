@@ -157,7 +157,6 @@ public class DriverService {
             return AppResponse.versionError("您无权删除司机！");
         }
         List<String> listDriverId = Arrays.asList(driverId.split(","));
-
         //删除用户
         int count = driverDao.deleteDriver(listDriverId,updateUser);
         if(0 == count){

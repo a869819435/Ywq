@@ -48,8 +48,6 @@
         </if>
     </select>
 
-
-
     <!--处理排序序号-->
     <update id="solveSlideshowNum" parameterType="com.xzsd.pc.slideshowHome.entity.SlideshowHome">
         UPDATE

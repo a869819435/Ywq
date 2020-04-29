@@ -110,11 +110,13 @@ public interface ClientOrderDao {
     /**
      * 更新评价成功相关信息
      * @param orderId
+     * @param evaluateInfo
      * @param orderStateId
      * @param updateUser
-     * @param goodsIds
      * @return
      */
-    int updateEvaluateState(@Param("orderId") String orderId,@Param("orderStateId") String orderStateId,
-                            @Param("updateUser")String updateUser,@Param("goodsIds")List<String> goodsIds);
+    int updateEvaluateState(@Param("orderId") String orderId,
+                            @Param("orderStateId") String orderStateId,
+                            @Param("updateUser") String updateUser,
+                            @Param("evaluateInfo") List<EvaluateInfo> evaluateInfo);
 }

@@ -310,12 +310,13 @@
             version = version + 1
         WHERE
             order_id = #{orderId}
-        <foreach collection="goodsIds" item="item" index="index" open=";" separator=";" close=";">
+        <foreach collection="evaluateInfo" item="item" index="index" open=";" separator=";" close=";">
             UPDATE t_info_goods
             SET
-                goods_evaluate_score = (SELECT AVG(evaluate_score) FROM t_info_goods_evaluate WHERE goods_id = #{item})
+                goods_evaluate_score = goods_evaluate_score + #{item.evaluateScore},
+                goods_evaluate_num = goods_evaluate_num + 1
             WHERE
-                goods_id = #{item}
+                goods_id = #{item.goodsId}
         </foreach>
     </update>
 </mapper>

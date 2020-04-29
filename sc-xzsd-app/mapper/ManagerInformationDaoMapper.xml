@@ -17,6 +17,7 @@
         WHERE
             a.is_delete = 0
             AND a.user_id = #{userId}
+            AND c.is_delete = 0
     </select>
 
 </mapper>
