@@ -31,15 +31,14 @@ public class GoodsClassifyService {
     @Resource
     private GoodsClassifyDao goodsClassifyDao;
 
-    @Autowired
-    private RedisUtil redisUtil;
-
     public static String ROOT_ID = "0";
 
     /**
      * 添加商品分类实现
      * @param goodsClassify
      * @return
+     * @Author ywq
+     * @Date 2020-03-29
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse addGoodsClassify(GoodsClassify goodsClassify){
@@ -63,22 +62,12 @@ public class GoodsClassifyService {
      * 获取分类详情
      * @param classifyId
      * @return
+     * @Author ywq
+     * @Date 2020-03-29
      */
     public AppResponse getGoodsClassify(String classifyId){
-        //以商品分类编号为键
-//        String key = classifyId;
-//        Object ans = redisUtil.get(key);
-        //如果缓存中有则直接取
-//        if(ans != null ){
-//            GoodsClassify goodsClassify = JsonUtils.fromJson(ans.toString(),GoodsClassify.class);
-//            goodsClassify.setClassifyId(classifyId);
-//            return AppResponse.success("查询分类详情成功！",goodsClassify);
-//        }
-        //缓存中没有则取出数据后再放入缓存，时间为5分钟
         GoodsClassify goodsClassify = goodsClassifyDao.getGoodsClassify(classifyId);
         goodsClassify.setClassifyId(classifyId);
-//        String json = JsonUtils.toJson(goodsClassify);
-//        redisUtil.set(key,json,300);
         return AppResponse.success("查询分类详情成功！",goodsClassify);
     }
 
@@ -86,11 +75,9 @@ public class GoodsClassifyService {
     /**
      * 获取全部商品分类
      * @return
+     * @Author ywq
+     * @Date 2020-03-29
      */
-//    public AppResponse listAllGoodsClassify(){
-//        List<GoodsClassifyVO> oneClassifyList = goodsClassifyDao.listClassify();
-//        return AppResponse.success("查询全部商品分类成功！",oneClassifyList);
-//    }
     public AppResponse listAllGoodsClassify(){
         //获取全部的商品分类
         List<GoodsClassify> goodsClassifyList = goodsClassifyDao.listClassify();
@@ -108,6 +95,8 @@ public class GoodsClassifyService {
      * @param tree
      * @param goodsClassifyList
      * @param id
+     * @Author ywq
+     * @Date 2020-03-29
      */
     private void initTree(GoodsClassifyTree tree , List<GoodsClassify> goodsClassifyList, String id){
         //处理数据，使得好遍历，这里用下标方式遍历也可以
@@ -138,6 +127,8 @@ public class GoodsClassifyService {
      * 树节点赋值
      * @param tree
      * @param goodsClassify
+     * @Author ywq
+     * @Date 2020-03-29
      */
     private void getDate(GoodsClassifyTree tree, GoodsClassify goodsClassify){
         tree.setClassifyId(goodsClassify.getClassifyId());
@@ -151,13 +142,15 @@ public class GoodsClassifyService {
      * 修改商品分类信息
      * @param goodsClassify
      * @return
+     * @Author ywq
+     * @Date 2020-03-29
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse updateGoodsClassify(GoodsClassify goodsClassify){
         //查看该分类是否存在
         int countGoodsClassify = goodsClassifyDao.countGoodsClassify(goodsClassify);
         if(0 != countGoodsClassify){
-            return AppResponse.bizError("该分类已存在");
+            return AppResponse.versionError("该分类已存在");
         }
         //获取当前登录人id
         goodsClassify.setUpdateUser(SecurityUtils.getCurrentUserId());
@@ -172,21 +165,24 @@ public class GoodsClassifyService {
      * 删除商品分类
      * @param classifyId
      * @return
+     * @Author ywq
+     * @Date 2020-03-29
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse deleteGoodsClassify(String classifyId,String classifyParent){
         //查看当前分类是否存在子类
-        int countNextClassify = goodsClassifyDao.countNextClassify(classifyId);
-        if(countNextClassify != 0){
-            //存在则不可以删除
-            return AppResponse.versionError("删除分类信息失败，该分类有子分类");
+        int countNextInfo = goodsClassifyDao.countNextInfo(classifyId,classifyParent);
+        String error = "";
+        if( (countNextInfo & 1) == 1 ){
+            //存在子分类则不可以删除
+            error += "该分类下有其他类\n";
         }
-        if( !ROOT_ID.equals(classifyParent) ){
-            int countNextGoods = goodsClassifyDao.countNextGoods(classifyId);
-            if(countNextGoods == 0){
-                //存在则不可以删除
-                return AppResponse.versionError("删除分类信息失败，该分类有对应商品");
-            }
+        if( (countNextInfo & 2) == 2 ){
+            //存在商品则不可以删除
+            error += "该分类下有商品";
+        }
+        if (error != null && !"".equals(error)){
+            return AppResponse.versionError(error);
         }
         //获取当前登录人的id
         String updateUser = SecurityUtils.getCurrentUserId();

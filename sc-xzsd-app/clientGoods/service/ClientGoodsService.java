@@ -41,11 +41,17 @@ public class ClientGoodsService {
      * 差评按钮值
      */
     static int BAD_SCORE = 1;
+    /**
+     * 保留的小数位数
+     */
+    static int NUM_SCALE = 1;
 
     /**
      * 获取商品详情实现
      * @param goodsId
      * @return
+     * @Author ywq
+     * @Date 2020-04-17
      */
     public AppResponse getGoods(String goodsId){
         ClientGoodsInfo goods = clientGoodsDao.getGoods(goodsId);
@@ -56,16 +62,22 @@ public class ClientGoodsService {
         BigDecimal num = new BigDecimal(goods.getGoodsEvaluateNum());
         //获取总评分
         BigDecimal score = new BigDecimal(goods.getGoodsEvaluateAllScore());
-        //获取平均分
+        //获取平均分,赋值初始为0
         BigDecimal avg = BigDecimal.ZERO;
+        //保留一位小数
+        avg = avg.setScale(NUM_SCALE,BigDecimal.ROUND_HALF_UP);
         if (num.compareTo(BigDecimal.ZERO) != 0){
-            avg = score.divide(num);
+            //四舍五入到一位小数,注意要先处理四舍五入,不然在无限循环小数的时候会出bug
+            avg = score.divide(num,NUM_SCALE,BigDecimal.ROUND_HALF_UP);
         }
-        //四舍五入到一位小数
-        avg = avg.setScale(1,BigDecimal.ROUND_HALF_UP);
         //平均数转字符串
         goods.setGoodsEvaluateScore(avg.toString());
         goods.setGoodsId(goodsId);
+        //更新浏览量
+        int count = clientGoodsDao.updateGoodsViews(goodsId);
+        if (count == 0 ){
+            return AppResponse.versionError("浏览量更新失败！");
+        }
         return AppResponse.success("查询商品详情成功！",goods);
     }
 
@@ -73,6 +85,8 @@ public class ClientGoodsService {
      * 查询商品评价信息
      * @param clientGoodsEvaluates
      * @return
+     * @Author ywq
+     * @Date 2020-04-17
      */
     public AppResponse listGoodsEvaluates(ClientGoodsEvaluates clientGoodsEvaluates){
         //获取除图片外的全部信息
@@ -120,6 +134,8 @@ public class ClientGoodsService {
     /**
      * 查询商品一级分类信息实现
      * @return
+     * @Author ywq
+     * @Date 2020-04-17
      */
     public AppResponse listOneGoodsClassify(){
         List<ClientGoodsClassify> oneClassify = clientGoodsDao.listOneGoodsClassify();
@@ -131,11 +147,18 @@ public class ClientGoodsService {
         return AppResponse.success("查询一级商品分类成功",oneClassifyList);
     }
 
+    /**
+     * 查询商品二级分类信息实现
+     * @return
+     * @Author ywq
+     * @Date 2020-04-17
+     */
     public AppResponse listGetClassGoods(String classifyId){
         //获取全部的二级分类以及商品
         List<ClientGoodsClassify> allTwoClassifyList = clientGoodsDao.listGetClassGoods(classifyId);
+        ClientGoods twoClassifyList = new ClientGoods();
         if( allTwoClassifyList == null || allTwoClassifyList.size() == 0){
-            return AppResponse.versionError("当前分类没有对应的二级分类");
+            return AppResponse.success("当前分类没有对应的二级分类",twoClassifyList);
         }
         int sum = allTwoClassifyList.size();
         List<ClientTwoClassify> twoClassify = new ArrayList<ClientTwoClassify>();
@@ -170,7 +193,6 @@ public class ClientGoodsService {
                 twoClassify.get(parent).getGoodsList().add(clientTwoClassifyGoods);
             }
         }
-        ClientGoods twoClassifyList = new ClientGoods();
         twoClassifyList.setTwoClassifyList(twoClassify);
         return AppResponse.success("查询二级分类以及其商品成功！",twoClassifyList);
     }

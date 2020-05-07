@@ -18,25 +18,11 @@ import java.util.List;
 public interface SlideshowHomeDao {
 
     /**
-     * 查询轮播图对应的商品是否存在
-     * @param goodsId
-     * @param slideshowId
-     * @return
-     */
-    int countGoodsId(@Param("goodsId") String goodsId, @Param("slideshowId") String slideshowId);
-
-    /**
-     * 查询轮播图对应的序号是否存在
-     * @param slideshowNum
-     * @param slideshowId
-     * @return
-     */
-    //int countSlideshowNum(@Param("slideshowNum") int slideshowNum, @Param("slideshowId") String slideshowId);
-
-    /**
      * 校验轮播图中不可重复信息是否存在重复
      * @param slideshowHome
      * @return
+     * @Author ywq
+     * @Date 2020-04-05
      */
     int countSlideshowInfo(SlideshowHome slideshowHome);
 
@@ -44,6 +30,8 @@ public interface SlideshowHomeDao {
      * 解决轮播图对应的序号重复
      * @param slideshowHome
      * @return
+     * @Author ywq
+     * @Date 2020-04-05
      */
     int solveSlideshowNum(SlideshowHome slideshowHome);
 
@@ -51,6 +39,8 @@ public interface SlideshowHomeDao {
      * 添加首页轮播图接口
      * @param slideshowHome
      * @return
+     * @Author ywq
+     * @Date 2020-04-05
      */
     int addSlideshowHome(SlideshowHome slideshowHome);
 
@@ -58,6 +48,8 @@ public interface SlideshowHomeDao {
      * 分页查询首页轮播图接口
      * @param slideshowStateId
      * @return
+     * @Author ywq
+     * @Date 2020-04-05
      */
     List<SlideshowHome> listSlideshowHomeByPage(@Param("slideshowStateId") String slideshowStateId);
 
@@ -66,6 +58,8 @@ public interface SlideshowHomeDao {
      * @param goodsName
      * @param goodsId
      * @return
+     * @Author ywq
+     * @Date 2020-04-05
      */
     List<Goods> listGoodsByPage(@Param("goodsName") String goodsName, @Param("goodsId") String goodsId);
 
@@ -73,6 +67,8 @@ public interface SlideshowHomeDao {
      * 修改首页轮播图状态接口
      * @param updateSlideList
      * @return
+     * @Author ywq
+     * @Date 2020-04-05
      */
     int updateSlideshowHomeState(@Param(value = "updateSlideList") List<SlideshowHome> updateSlideList);
 
@@ -81,6 +77,8 @@ public interface SlideshowHomeDao {
      * @param deleteSlideshowHome
      * @param updateUser
      * @return
+     * @Author ywq
+     * @Date 2020-04-05
      */
     int deleteSlideshowHome(@Param("deleteSlideshowHome") List<String> deleteSlideshowHome, @Param("updateUser") String updateUser);
 

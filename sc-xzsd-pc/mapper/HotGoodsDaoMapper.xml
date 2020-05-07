@@ -2,34 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.xzsd.pc.hotGoods.dao.HotGoodsDao">
 
-    <!--检查商品编号是否存在-->
-    <select id="countGoodsId" parameterType="java.lang.String" resultType="int">
-        SELECT
-            COUNT(goods_id)
-        FROM
-            t_info_hot_goods
-        WHERE
-            is_delete = 0
-            AND goods_id = #{goodsId}
-        <if test="hotGoodsId != null and  hotGoodsId != '' ">
-            AND hot_goods_id != #{hotGoodsId}
-        </if>
-    </select>
-
-    <!--检查热门商品序号是否存在-->
-    <select id="countHotGoodsNum" parameterType="java.lang.String" resultType="int">
-        SELECT
-            COUNT(hot_goods_num)
-        FROM
-            t_info_hot_goods
-        WHERE
-            is_delete = 0
-            AND hot_goods_num = #{hotGoodsNum}
-        <if test="hotGoodsId != null and  hotGoodsId != '' ">
-            AND hot_goods_id != #{hotGoodsId}
-        </if>
-    </select>
-
     <!--校验热门商品信息(编号、排序号)是否存在重复-->
     <select id="countHotGoodsInfo" parameterType="com.xzsd.pc.hotGoods.entity.HotGoods" resultType="int">
         SELECT

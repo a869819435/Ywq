@@ -20,6 +20,8 @@ public interface ClientShopCartDao {
      * 统计该商品是否在购物车中
      * @param goodsId
      * @return
+     * @Author ywq
+     * @Date 2020-04-18
      */
     ClientShopCart isGoodsInShopCart(@Param("goodsId") String goodsId,@Param("nowLogin")String nowLogin);
 
@@ -27,6 +29,8 @@ public interface ClientShopCartDao {
      * 新增购物车接口
      * @param clientShopCart
      * @return
+     * @Author ywq
+     * @Date 2020-04-18
      */
     int addShoppingCart(ClientShopCart clientShopCart);
 
@@ -34,6 +38,8 @@ public interface ClientShopCartDao {
      * 查询购物车接口
      * @param userId
      * @return
+     * @Author ywq
+     * @Date 2020-04-18
      */
     List<ClientShopCartVO> listShoppingCartsByPage(@Param("userId") String userId);
 
@@ -41,6 +47,8 @@ public interface ClientShopCartDao {
      * 修改购物车(商品数量)接口
      * @param clientShopCart
      * @return
+     * @Author ywq
+     * @Date 2020-04-18
      */
     int updateShoppingCart(ClientShopCart clientShopCart);
 
@@ -49,6 +57,8 @@ public interface ClientShopCartDao {
      * @param shopCartIdList
      * @param updateUser
      * @return
+     * @Author ywq
+     * @Date 2020-04-18
      */
     int deleteShoppingCart(@Param("shopCartIdList") List<String> shopCartIdList,@Param("updateUser") String updateUser);
 }

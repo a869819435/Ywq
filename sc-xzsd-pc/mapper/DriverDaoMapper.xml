@@ -99,6 +99,15 @@
         FROM
             t_info_driver a
             LEFT JOIN t_sys_user b ON a.driver_id = b.user_id
+        <if test="Dr.role == 2">
+            LEFT JOIN t_info_store c ON c.is_delete = 0
+            AND c.province_id = a.province_id
+            AND c.city_id = a.city_id
+            AND c.area_id = a.area_id
+            LEFT JOIN t_info_area_level d ON d.area_id = c.province_id
+            LEFT JOIN t_info_area_level e ON e.area_id = c.city_id
+            LEFT JOIN t_info_area_level f ON f.area_id = c.area_id
+        </if>
         WHERE
             a.is_delete = 0
         <if test="Dr.driverId != null and Dr.driverId != '' ">
@@ -117,9 +126,9 @@
             AND a.area_id = #{Dr.areaId}
         </if>
         <if test="Dr.role == 2">
-            AND b.user_id = #{nowLogin};
+            AND c.user_id = #{nowLogin}
         </if>
-            ORDER BY a.create_time DESC
+        ORDER BY a.create_time DESC
     </select>
 
     <!--修改司机信息-->
@@ -152,7 +161,7 @@
         WHERE
             is_delete = 0
             AND user_id = #{driverId}
-            AND version = #{version};
+            AND version = #{version}
     </update>
 
     <!--删除司机-->

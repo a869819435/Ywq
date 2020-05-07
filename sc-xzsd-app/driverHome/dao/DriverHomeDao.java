@@ -20,6 +20,8 @@ public interface DriverHomeDao {
      * 查询司机负责的门店信息接口
      * @param userId
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     List<StroeInfo> listDriverStores(@Param("userId") String userId);
 

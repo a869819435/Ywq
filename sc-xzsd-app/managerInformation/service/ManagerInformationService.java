@@ -26,6 +26,8 @@ public class ManagerInformationService {
     /**
      * 查询负责店长门店的司机信息实现
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     public AppResponse listManagerDrivers(){
         String userId = SecurityUtils.getCurrentUserId();

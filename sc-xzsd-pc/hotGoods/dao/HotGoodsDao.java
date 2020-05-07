@@ -18,25 +18,11 @@ import java.util.List;
 public interface HotGoodsDao {
 
     /**
-     * 检查商品编号是否存在
-     * @param goodsId
-     * @param hotGoodsId
-     * @return
-     */
-    int countGoodsId(@Param("goodsId") String goodsId, @Param("hotGoodsId") String hotGoodsId);
-
-    /**
-     * 检查热门商品序号是否存在
-     * @param hotGoodsNum
-     * @param hotGoodsId
-     * @return
-     */
-    int countHotGoodsNum(@Param("hotGoodsNum") int hotGoodsNum, @Param("hotGoodsId") String hotGoodsId);
-
-    /**
      * 校验热门商品信息是否存在重复
      * @param hotGoods
      * @return
+     * @Author ywq
+     * @Date 2020-04-11
      */
     int countHotGoodsInfo(HotGoods hotGoods);
 
@@ -45,6 +31,8 @@ public interface HotGoodsDao {
      * @param hotGoodsNum
      * @param hotGoodsId
      * @return
+     * @Author ywq
+     * @Date 2020-04-11
      */
     int solveAddHotGoodsNum(@Param("hotGoodsNum") String hotGoodsNum, @Param("hotGoodsId") String hotGoodsId);
 
@@ -52,6 +40,8 @@ public interface HotGoodsDao {
      * 添加热门商品
      * @param hotGoods
      * @return
+     * @Author ywq
+     * @Date 2020-04-11
      */
     int addHotGoods(HotGoods hotGoods);
 
@@ -59,6 +49,8 @@ public interface HotGoodsDao {
      * 获取热门商品详情
      * @param hotGoodsId
      * @return
+     * @Author ywq
+     * @Date 2020-04-11
      */
     HotGoods getHotGoods(@Param("hotGoodsId") String hotGoodsId);
 
@@ -67,6 +59,8 @@ public interface HotGoodsDao {
      * @param goodsId
      * @param goodsName
      * @return
+     * @Author ywq
+     * @Date 2020-04-11
      */
     List<HotGoods> listHotGoodsByPage(@Param("goodsId") String goodsId, @Param("goodsName") String goodsName);
 
@@ -76,6 +70,8 @@ public interface HotGoodsDao {
      * @param oldHotGoodsNum
      * @param hotGoodsId
      * @return
+     * @Author ywq
+     * @Date 2020-04-11
      */
     int solveUpdateHotGoodsNum(@Param("hotGoodsNum") int hotGoodsNum, @Param("oldHotGoodsNum") int oldHotGoodsNum,@Param("hotGoodsId") String hotGoodsId);
 
@@ -83,6 +79,8 @@ public interface HotGoodsDao {
      * 获取当前热门商品的序号
      * @param hotGoodsId
      * @return
+     * @Author ywq
+     * @Date 2020-04-11
      */
     int getHotGoodsNum(@Param("hotGoodsId") String hotGoodsId);
 
@@ -90,12 +88,16 @@ public interface HotGoodsDao {
      * 修改热门商品信息
      * @param hotGoods
      * @return
+     * @Author ywq
+     * @Date 2020-04-11
      */
     int updateHotGoods(HotGoods hotGoods);
 
     /**
      * 查询热门商品展示数量
      * @return
+     * @Author ywq
+     * @Date 2020-04-11
      */
     HotGoodsShowNumVO getHotGoodsShowNum();
 
@@ -105,6 +107,8 @@ public interface HotGoodsDao {
      * @param version
      * @param updateUser
      * @return
+     * @Author ywq
+     * @Date 2020-04-11
      */
     int updateHotGoodsShowNum(@Param("hotGoodsShowNum") String hotGoodsShowNum,@Param("version") String version, @Param("updateUser") String updateUser);
 
@@ -113,6 +117,8 @@ public interface HotGoodsDao {
      * @param hotGoodsIdList
      * @param updateUser
      * @return
+     * @Author ywq
+     * @Date 2020-04-11
      */
     int deleteHotGoods(@Param("hotGoodsIdList") List<String> hotGoodsIdList, @Param("updateUser") String updateUser);
 }

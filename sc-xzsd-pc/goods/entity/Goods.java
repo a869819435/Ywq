@@ -53,11 +53,11 @@ public class Goods implements Serializable {
     /**
      * 成本价
      */
-    private String goodsOriginalCost;
+    private double goodsOriginalCost;
     /**
      * 在售价
      */
-    private String goodsPrice;
+    private double goodsPrice;
     /**
      * 广告词
      */
@@ -195,19 +195,19 @@ public class Goods implements Serializable {
         this.goodsInventory = goodsInventory;
     }
 
-    public String getGoodsOriginalCost() {
+    public double getGoodsOriginalCost() {
         return goodsOriginalCost;
     }
 
-    public void setGoodsOriginalCost(String goodsOriginalCost) {
+    public void setGoodsOriginalCost(double goodsOriginalCost) {
         this.goodsOriginalCost = goodsOriginalCost;
     }
 
-    public String getGoodsPrice() {
+    public double getGoodsPrice() {
         return goodsPrice;
     }
 
-    public void setGoodsPrice(String goodsPrice) {
+    public void setGoodsPrice(double goodsPrice) {
         this.goodsPrice = goodsPrice;
     }
 

@@ -1,11 +1,17 @@
 package com.xzsd.pc.user.enums;
 
+/**
+ * @Deprecated RoleEnums
+ * @Description 角色菜单
+ * @Author ywq
+ * @Date 2020-03-24
+ */
 public enum RoleEnums {
 
     /**
      * 超级管理员
      */
-    SUPPER_ADMIM("0", "超级管理员"),
+    SUPPER_ADMIN("0", "超级管理员"),
 
     /**
      * 管理员

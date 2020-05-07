@@ -1,5 +1,11 @@
 package com.xzsd.app.clientOrder.enums;
 
+/**
+ * @ClassName OrderStateEnums
+ * @Deripition app客户端订单状态枚举
+ * @Author ywq
+ * @Date 2020-04-18
+ */
 public enum OrderStateEnums {
 
     /**

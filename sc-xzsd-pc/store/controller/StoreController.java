@@ -90,9 +90,9 @@ public class StoreController {
      * @Date 2020-04-12
      */
     @PostMapping("updateStore")
-    public AppResponse updateStore(Store store){
+    public AppResponse updateStore(Store store,String nowRole){
         try{
-            return storeService.updateStore(store);
+            return storeService.updateStore(store,nowRole);
         }catch (Exception e){
             logger.error("修改门店信息失败",e);
             System.out.println(e.toString());

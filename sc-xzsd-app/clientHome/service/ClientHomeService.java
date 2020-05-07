@@ -25,6 +25,8 @@ public class ClientHomeService {
     /**
      * 查询首页轮播图信息
      * @return
+     * @Author ywq
+     * @Date 2020-04-17
      */
     public AppResponse listRotationCharHome(){
          List<ClientHomeSlideshowInfo> clientHomeSlideshowInfoList = clientHomeDao.listRotationCharHome();
@@ -39,9 +41,11 @@ public class ClientHomeService {
     /**
      * 查询热门商品信息
      * @return
+     * @Author ywq
+     * @Date 2020-04-17
      */
     public AppResponse listHotGoods(){
-        int showNum = clientHomeDao.getHotGoodsShowNum() - 1;
+        int showNum = clientHomeDao.getHotGoodsShowNum();
         List<ClientHomeGoodsInfo> clientHomeGoodsInfos = clientHomeDao.listHotGoods(showNum);
         if(clientHomeGoodsInfos == null ){
             AppResponse.notFound("未查到热门商品信息！");

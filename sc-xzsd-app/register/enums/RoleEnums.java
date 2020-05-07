@@ -1,5 +1,11 @@
 package com.xzsd.app.register.enums;
 
+/**
+ * @ClassName RoleEnums
+ * @Deprecation 角色信息枚举
+ * @Author ywq
+ * @Date 2020-04-15
+ */
 public enum RoleEnums {
 
     /**
@@ -48,6 +54,5 @@ public enum RoleEnums {
     public String getName() {
         return name;
     }
-
 
 }

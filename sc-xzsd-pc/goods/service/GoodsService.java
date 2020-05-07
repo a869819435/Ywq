@@ -1,20 +1,14 @@
 package com.xzsd.pc.goods.service;
 
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.neusoft.core.restful.AppResponse;
 import com.neusoft.security.client.utils.SecurityUtils;
-import com.neusoft.util.JsonUtils;
 import com.qcloud.cos.utils.StringUtils;
 import com.xzsd.pc.goods.enums.GoodsStateEnums;
 import com.xzsd.pc.goodsClassify.entity.GoodsClassifyList;
-import com.xzsd.pc.utils.RedisUtil;
 import com.neusoft.util.StringUtil;
 import com.xzsd.pc.goods.dao.GoodsDao;
 import com.xzsd.pc.goods.entity.Goods;
 import com.xzsd.pc.goodsClassify.entity.GoodsClassify;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +18,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.neusoft.core.page.PageUtils.getPageInfo;
-import static com.neusoft.core.page.PageUtils.getPageInfoAndGuide;
 
 /**
  * 商品管理实现类
@@ -39,37 +32,6 @@ public class GoodsService {
     @Resource
     private GoodsDao goodsDao;
 
-    @Autowired
-    private RedisUtil redisUtil;
-
-//    @Autowired
-//    private JmsMessagingTemplate jmsMessagingTemplate;
-//    //发送信息的封装包
-//
-//    @Autowired
-//    private Queue queue;
-//
-//    @Autowired
-//    private Topic topic;
-//
-//    @PostMapping("sendQueue/test")
-//    public String sendQueue(Goods goods){
-//        this.sendMessage(this.queue,goods);
-//        return "success of test";
-//    }
-//
-//    @PostMapping("sendTopic/test")
-//    public String sendTopic(Goods goods){
-//        this.sendMessage(this.topic,goods);
-//        return "success of test";
-//    }
-//
-//    private void sendMessage(Destination destination, final Goods message){
-//        jmsMessagingTemplate.convertAndSend(destination,message);
-//    }
-    @Autowired
-    private Gson gson;
-
     /**
      * 获取商品分类下拉框
      * @param classifyId
@@ -79,6 +41,7 @@ public class GoodsService {
      */
     public AppResponse listGoodsClassify(String classifyId){
         if(classifyId == null || "".equals(classifyId)){
+            //当前分类为1级分类,赋值id为0
             classifyId = "0";
         }
         List<GoodsClassify> goodsClassifies = goodsDao.listGoodsClassify(classifyId);
@@ -107,7 +70,6 @@ public class GoodsService {
             return AppResponse.versionError("该书号已存在，此类检查");
         }
         goods.setGoodsId("sp" + StringUtil.getCommonCode(2));
-        //新增用户
         //获取当前登录人的id
         String createUser = SecurityUtils.getCurrentUserId();
         goods.setCreateUser(createUser);
@@ -115,7 +77,6 @@ public class GoodsService {
         if(0 == count){
             return AppResponse.versionError("新增商品失败");
         }
-        //sendQueue(goods);
         return AppResponse.success("新增商品成功！",goods);
     }
 
@@ -135,29 +96,11 @@ public class GoodsService {
      * 分页查询商品
      * @param goods
      * @return
+     * @Author ywq
+     * @Date 2020-03-26
      */
     public AppResponse listGoods(Goods goods){
-//        //将商品信息转成json数据作为缓存的键
-//        String key = JsonUtils.toJson(goods);
-//        String isCache = "(缓存成功)";
-//        //查看缓存是否有这个商品信息
-//        Object answer = redisUtil.get(key);
-        List<Goods> listGoods = null;
-//        if(answer != null ){
-//            //如果缓存有这个键，便直接从缓存获取值，将这个值从json转回list
-//            listGoods = gson.fromJson(answer.toString(),new TypeToken<List<Goods>>(){}.getType());
-//        }else {
-//            //如果没有缓存，则调用数据库，获取数据后存入缓存，有效时间为5分钟
-            listGoods = goodsDao.listGoodsByPage(goods);
-//            String json = JsonUtils.toJson(listGoods);
-//            //存入缓存
-//            boolean flag = redisUtil.set(key,json,300);
-//            if(flag == false){
-//                isCache = "(缓存失败)";
-//            }
-//        }
-        // 以下是添加了页数导航栏的分页，getPageInfo是原来没有导航的分页，到时候如果不行改回来
-        // 对获取的list分页显示,这里的还可以加个参数是页码导航连续显示的页数，就是下面12345页显示
+        List<Goods> listGoods = goodsDao.listGoodsByPage(goods);
         return AppResponse.success("分页查询商品列表成功" ,getPageInfo(listGoods));
     }
 
@@ -165,6 +108,8 @@ public class GoodsService {
      * 更新商品信息
      * @param goods
      * @return
+     * @Author ywq
+     * @Date 2020-03-26
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse updateGoods(Goods goods){
@@ -173,6 +118,14 @@ public class GoodsService {
         AppResponse appResponse = AppResponse.success("修改商品信息成功！");
         if(0 != countIsbn){
             return AppResponse.versionError("该书号已存在！请重新输入");
+        }
+        //当前商品状态为在售的且商品库存为0，直接改变状态为售罄
+        if (goods.getGoodsStateId().equals(GoodsStateEnums.ON_SALE.getType()) && goods.getGoodsInventory() <= 0){
+            goods.setGoodsStateId(GoodsStateEnums.SOLD_OUT.getType());
+        }
+        //当前商品状态为售罄的且商品库存为大于0，直接改变状态为在售
+        if (goods.getGoodsStateId().equals(GoodsStateEnums.SOLD_OUT.getType()) && goods.getGoodsInventory() > 0){
+            goods.setGoodsStateId(GoodsStateEnums.ON_SALE.getType());
         }
         //获取当前登录人的id
         String updateUser = SecurityUtils.getCurrentUserId();
@@ -187,15 +140,21 @@ public class GoodsService {
     /**
      * 更新商品状态
      * @param goods
+     * @param goodsInventories
      * @return
+     * @Author ywq
+     * @Date 2020-03-26
      */
     @Transactional(rollbackFor = Exception.class)
-    public AppResponse updateGoodsState(Goods goods,String goodsInventory){
+    public AppResponse updateGoodsState(Goods goods,String goodsInventories){
         //取出商品编号和版本号转成数组
         List<String> listGoodsId = Arrays.asList(goods.getGoodsId().split(","));
         List<String> listVersion = Arrays.asList(goods.getVersion().split(","));
-        //取出要修改的商品的库存
-        List<String> goodsInventories = Arrays.asList(goodsInventory.split(","));
+        List<String> inventories = new ArrayList<>();
+        if (goodsInventories != null && !"".equals(goodsInventories)){
+            //取出要修改的商品的库存,只有当状态为上架的时候才有
+            inventories = Arrays.asList(goodsInventories.split(","));
+        }
         List<Goods> listUpdate = new ArrayList<>();
         //获取要修改的状态
         String goodsStateId = goods.getGoodsStateId();
@@ -208,7 +167,8 @@ public class GoodsService {
             goods1.setVersion(listVersion.get(i));
             goods1.setGoodsStateId(goodsStateId);
             goods1.setUpdateUser(updateUser);
-            if (goodsStateId.equals(GoodsStateEnums.ON_SALE.getType()) && Integer.valueOf(goodsInventories.get(i)) <= 0){
+            //当前要改变的状态为在售的且商品库存为0，直接改变状态为售罄
+            if (goodsStateId.equals(GoodsStateEnums.ON_SALE.getType()) && Integer.valueOf(inventories.get(i)) <= 0){
                 goods1.setGoodsStateId(GoodsStateEnums.SOLD_OUT.getType());
             }
             listUpdate.add(goods1);
@@ -224,6 +184,8 @@ public class GoodsService {
      * 删除商品
      * @param goodsId
      * @return
+     * @Author ywq
+     * @Date 2020-03-26
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse deleteGoods(String goodsId){

@@ -35,6 +35,8 @@ public class MenuService {
     /**
      * 查询菜单名列表接口
      * @return
+     * @Author ywq
+     * @Date 2020-04-14
      */
     public AppResponse listMenu(){
         MenuList menuList = new MenuList();
@@ -46,6 +48,8 @@ public class MenuService {
      * 根据角色查询首页菜单列表接口
      * @param role
      * @return
+     * @Author ywq
+     * @Date 2020-04-14
      */
     public AppResponse listMenuHome(String role){
         MenuList menuList = new MenuList();
@@ -57,6 +61,8 @@ public class MenuService {
      * 新增菜单接口
      * @param menu
      * @return
+     * @Author ywq
+     * @Date 2020-04-14
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse addMenu(Menu menu){
@@ -83,6 +89,8 @@ public class MenuService {
      * 查询菜单详情接口
      * @param menuId
      * @return
+     * @Author ywq
+     * @Date 2020-04-14
      */
     public AppResponse getMenu(String menuId){
         Menu menu = menuDao.getMenu(menuId);
@@ -94,6 +102,8 @@ public class MenuService {
      * 修改菜单接口
      * @param menu
      * @return
+     * @Author ywq
+     * @Date 2020-04-14
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse updateMenu(Menu menu){
@@ -122,6 +132,8 @@ public class MenuService {
      * 删除菜单接口
      * @param menuId
      * @return
+     * @Author ywq
+     * @Date 2020-04-14
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse deleteMenu(String menuId){

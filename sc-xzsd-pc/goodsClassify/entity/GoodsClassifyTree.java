@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * @ClassName MyTree
- * @Description 树节点实体类（其实不用分one，two，只是为了填坑）
+ * @Description 树节点实体类
  * @Author ywq
  * @Date 2020-04-14
  */

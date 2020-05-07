@@ -33,6 +33,8 @@ public class ClientShopCartService {
      * 添加购物车实现
      * @param clientShopCart
      * @return
+     * @Author ywq
+     * @Date 2020-04-18
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse addShoppingCart(ClientShopCart clientShopCart){
@@ -63,6 +65,8 @@ public class ClientShopCartService {
     /**
      * 分页查询购物车列表
      * @return
+     * @Author ywq
+     * @Date 2020-04-18
      */
     public AppResponse listShoppingCarts(){
         String userId = SecurityUtils.getCurrentUserId();
@@ -77,6 +81,8 @@ public class ClientShopCartService {
      * 更新购物车实现
      * @param clientShopCart
      * @return
+     * @Author ywq
+     * @Date 2020-04-18
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse updateShoppingCart(ClientShopCart clientShopCart){
@@ -92,6 +98,8 @@ public class ClientShopCartService {
      * 删除购物车商品实现
      * @param shopCartId
      * @return
+     * @Author ywq
+     * @Date 2020-04-18
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse deleteShoppingCart(String shopCartId){

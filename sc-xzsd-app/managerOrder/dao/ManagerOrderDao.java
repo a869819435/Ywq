@@ -20,6 +20,8 @@ public interface ManagerOrderDao {
      * @param userId
      * @param orderStateId
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     List<ManagerOrderVO> listManagerOrdersByPage(@Param("userId")String userId, @Param("orderStateId")String orderStateId);
 
@@ -28,6 +30,8 @@ public interface ManagerOrderDao {
      * @param orderIdList
      * @param orderStateId
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     List<ManagerOrderGoodsVO> listManagerOrdersGoods(@Param("orderIdList")List<String> orderIdList, @Param("orderStateId")String orderStateId);
 
@@ -38,6 +42,8 @@ public interface ManagerOrderDao {
      * @param updateUser
      * @param version
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     int updateManagerOrderState(@Param("orderId") String orderId,@Param("orderStateId") String orderStateId,
                                 @Param("updateUser")String updateUser,@Param("version")String version);
@@ -46,6 +52,8 @@ public interface ManagerOrderDao {
      * 查询订单详情接口
      * @param orderId
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     List<ManagerOrderDeepenVO> listManagerOrderDeepen(@Param("orderId")String orderId);
 }

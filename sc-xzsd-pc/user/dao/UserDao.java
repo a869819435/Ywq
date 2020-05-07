@@ -16,30 +16,11 @@ import java.util.List;
 public interface UserDao {
 
     /**
-     * 获取当前登录的角色
-     * @param nowLogin
-     * @return
-     */
-    String getUserRole(@Param("nowLogin") String nowLogin);
-
-    /**
-     * 统计用户账号数量
-     * @param user 用户信息
-     * @return
-     */
-    int countUserAcct(User user);
-
-    /**
-     * 统计用户电话数量
-     * @param user 用户信息
-     * @return
-     */
-    int countPhone(User user);
-
-    /**
      * 校验用户电话、用户账号数量
      * @param user 用户信息
      * @return
+     * @Author ywq
+     * @Date 2020-03-24
      */
     int countInfo(User user);
 
@@ -47,6 +28,8 @@ public interface UserDao {
      * 新增用户
      * @param user 用户信息
      * @return
+     * @Author ywq
+     * @Date 2020-03-24
      */
     int addUser(User user);
 
@@ -54,6 +37,8 @@ public interface UserDao {
      * 获取用户详情
      * @param userId 用户编号
      * @return
+     * @Author ywq
+     * @Date 2020-03-24
      */
     User getUser(@Param("userId") String userId);
 
@@ -61,6 +46,8 @@ public interface UserDao {
      * 获取所有用户信息
      * @param user 模糊查询的信息
      * @return
+     * @Author ywq
+     * @Date 2020-03-24
      */
     List<User> listUsersByPage(User user);
 
@@ -68,20 +55,17 @@ public interface UserDao {
      * 修改用户信息
      * @param user 用户信息
      * @return
+     * @Author ywq
+     * @Date 2020-03-24
      */
     int updateUser(User user);
-
-    /**
-     * 获取所有选中的用户的角色
-     * @param getRoleUserId
-     * @return
-     */
-    List<User> getAllRole(@Param("getRoleUserId") List<String> getRoleUserId);
 
     /**
      * 获取有门店的店长编号
      * @param userIdOfManager
      * @return
+     * @Author ywq
+     * @Date 2020-03-24
      */
     List<String> getHavingStore(@Param("userIdOfManager") List<String> userIdOfManager);
 
@@ -90,6 +74,8 @@ public interface UserDao {
      * @param listUserId 多个用户编号
      * @param updateUser 修改者编号
      * @return
+     * @Author ywq
+     * @Date 2020-03-24
      */
     int deleteUser(@Param("listUserId") List<String> listUserId, @Param("updateUser") String updateUser);
 }

@@ -25,6 +25,8 @@ public class ClientInformationService {
      * 修改客户邀请码实现
      * @param inviteCode
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse updateInviteCode(String inviteCode){

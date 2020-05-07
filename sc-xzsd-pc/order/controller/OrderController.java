@@ -68,9 +68,9 @@ public class OrderController {
      * @Date 2020-04-10
      */
     @PostMapping("updateOrderState")
-    public AppResponse updateOrderState(Order order){
+    public AppResponse updateOrderState(Order order,String nowRole){
         try{
-            return orderService.updateOrderState(order);
+            return orderService.updateOrderState(order,nowRole);
         }catch (Exception e){
             logger.error("修改订单状态失败",e);
             System.out.println(e.toString());

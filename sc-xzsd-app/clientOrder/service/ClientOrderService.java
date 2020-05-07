@@ -38,6 +38,8 @@ public class ClientOrderService {
      * 添加订单
      * @param clientOrderGoods
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse addOrder(ClientOrderGoods clientOrderGoods,String shopCartId){
@@ -143,13 +145,19 @@ public class ClientOrderService {
      * 查询订单列表
      * @param orderStateId
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     public AppResponse listOrder(String orderStateId){
         //获取当前登录人id
         String userId = SecurityUtils.getCurrentUserId();
         List<ClientOrderVO> order = clientOrderDao.listOrderByPage(userId,orderStateId);
         if (order == null || order.size() == 0) {
-            return AppResponse.notFound("您还没有下过订单！");
+            if ( orderStateId == null || "".equals(orderStateId) ){
+                return AppResponse.notFound("您还没有下过订单！");
+            }else {
+                return AppResponse.notFound("没有当前状态的订单！");
+            }
         }
         //获取对应的订单编号
         List<String> orderIds = new ArrayList<>();
@@ -180,12 +188,14 @@ public class ClientOrderService {
      * @param orderStateId
      * @param version
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse updateOrderState(String orderId,String orderStateId,String version){
         //获取当前登录人id为修改人
         String updateUser = SecurityUtils.getCurrentUserId();
-        //关联更新
+        //当订单要修改的状态为已完成或者取消订单的时候涉及的商品信息更新
         if (OrderStateEnums.FINISHED_NO.getType().equals(orderStateId) || OrderStateEnums.DELETED.getType().equals(orderStateId)){
             List<OrderGoods> orderGoodsList = clientOrderDao.getOrderGoods(orderId);
             for (OrderGoods i : orderGoodsList){
@@ -215,6 +225,8 @@ public class ClientOrderService {
      * 查询订单详情
      * @param orderId
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     public AppResponse listOrderDeepen(String orderId){
         List<ClientOrderDeepenVO> clientOrderDeepenList = clientOrderDao.listOrderDeepen(orderId);
@@ -226,6 +238,13 @@ public class ClientOrderService {
         return AppResponse.success("获取订单详情成功！",orderDeepen);
     }
 
+    /**
+     * 初始化订单详情商品信息列表,且赋值详情信息
+     * @param clientOrderDeepenList
+     * @return
+     * @Author ywq
+     * @Date 2020-04-19
+     */
     private ClientOrderDeepenVO getOrderDeepenInfo(List<ClientOrderDeepenVO> clientOrderDeepenList){
         //初始化订单详情商品信息列表,且赋值详情信息
         ClientOrderDeepenVO clientOrderDeepenVO = new ClientOrderDeepenVO();
@@ -244,6 +263,7 @@ public class ClientOrderService {
             clientOrderGoods.setGoodsName(i.getGoodsName());
             clientOrderGoods.setGoodsPrice(i.getGoodsPrice());
             clientOrderGoods.setGoodsImagePath(i.getGoodsImagePath());
+            clientOrderGoods.setGoodsDescribe(i.getGoodsDescribe());
             clientOrderGoods.setCartGoodsCount(i.getCartGoodsCount());
             clientOrderGoods.setGoodsId(i.getGoodsId());
             clientOrderDeepenVO.getGoodsList().add(clientOrderGoods);
@@ -255,52 +275,67 @@ public class ClientOrderService {
      * 查询订单评价商品信息列表
      * @param orderId
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     public AppResponse listGoodsForEvaluate(String orderId){
         //获取订单商品的图片
         List<ClientOrderGoods> clientOrderGoods = clientOrderDao.listGoodsForEvaluate(orderId);
         if(clientOrderGoods == null){
-            return AppResponse.notFound("获取订单商品信息失败");
+            return AppResponse.notFound("暂时未有人评价该商品");
         }
         ClientOrderData goodsList = new ClientOrderData();
         goodsList.setGoodsList(clientOrderGoods);
-        return AppResponse.success("获取订单商品信息成功！",goodsList);
+        return AppResponse.success("查询商品评价信息成功！",goodsList);
     }
 
     /**
      * 新增订单商品评价
      * @param evaluateOrder
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse addGoodsEvaluate(JSONObject evaluateOrder){
         //将json数据转list
         EvaluateOrder ans = new GsonBuilder().create().fromJson(evaluateOrder.toJSONString(),EvaluateOrder.class);
-        List<String> goodsIds = new ArrayList<>();
         String userId = SecurityUtils.getCurrentUserId();
         //添加编号值
-        for (EvaluateInfo i : ans.getEvaluateInfoList()){
-            i.setEvaluateId("pj" + StringUtil.getCommonCode(2));
-            i.setUserId(userId);
-            goodsIds.add(i.getGoodsId());
-            if(i.getImageList() != null){
-                for ( ImageInfo j : i.getImageList() ){
-                    j.setEvaluateId(i.getEvaluateId());
+        for (int i = 0 ; i< ans.getEvaluateInfoList().size() ; i++ ){
+            EvaluateInfo temp = ans.getEvaluateInfoList().get(i);
+            if ( temp.getEvaluateContent() != null && !"".equals(temp.getEvaluateContent()) ){
+                if( temp.getEvaluateScore() == 0 ){
+                    return AppResponse.versionError("您有未选择评价星级的评价");
+                }
+            }else if( temp.getEvaluateScore() == 0 ) {
+                ans.getEvaluateInfoList().remove(i);
+                i--;
+                continue;
+            }
+            temp.setEvaluateId("pj" + StringUtil.getCommonCode(2));
+            temp.setUserId(userId);
+            if(temp.getImageList() != null){
+                for ( ImageInfo j : temp.getImageList() ){
+                    j.setEvaluateId(temp.getEvaluateId());
                     j.setCreateUser(userId);
                     j.setImageId("pjt" + StringUtil.getCommonCode(2));
                 }
             }
         }
-        //添加商品评价接口,同时修改商品的总评分
-        int count = clientOrderDao.addGoodsEvaluate(ans.getEvaluateInfoList());
-        if ( count == 0 ){
-            return AppResponse.versionError("新增商品评价失败！");
-        }
-        //修改订单状态和商品评价评分
-        int countUpdateEvaluate = clientOrderDao.updateEvaluateState(ans.getOrderId()
-                ,OrderStateEnums.FINISHED_YES.getType(),userId,ans.getEvaluateInfoList());
-        if (countUpdateEvaluate == 0){
-            return AppResponse.versionError("订单状态修改失败或者商品评分更新失败！");
+        //添加有效的商品评价信息,同时修改商品的总评分和订单状态
+        if ( ans.getEvaluateInfoList() != null && ans.getEvaluateInfoList().size() != 0 ){
+            int count = 0;
+            count = clientOrderDao.addGoodsEvaluate(ans.getEvaluateInfoList());
+            if ( count == 0 ){
+                return AppResponse.versionError("新增商品评价失败！");
+            }
+            //修改订单状态和商品评价评分
+            int countUpdateEvaluate = clientOrderDao.updateEvaluateState(ans.getOrderId()
+                    ,OrderStateEnums.FINISHED_YES.getType(),userId,ans.getEvaluateInfoList());
+            if (countUpdateEvaluate == 0){
+                return AppResponse.versionError("订单状态修改失败或者商品评分更新失败！");
+            }
         }
         return AppResponse.success("新增商品评价成功！");
     }

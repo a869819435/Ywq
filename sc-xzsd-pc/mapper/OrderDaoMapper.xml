@@ -36,10 +36,13 @@
         FROM
             t_info_order a
             LEFT JOIN t_sys_user b ON a.user_id = b.user_id
+        <if test="role == 2">
+            LEFT JOIN t_info_store c ON a.store_id = c.store_id
+        </if>
         WHERE
             a.is_delete = 0
         <if test="role == 2">
-            AND b.user_id = #{nowLogin}
+            AND c.user_id = #{nowLogin}
         </if>
         <if test="o.userName != null and o.userName != '' ">
             AND b.user_name LIKE concat('%', #{o.userName}, '%')
@@ -58,20 +61,6 @@
         </if>
             ORDER BY a.create_time DESC
     </select>
-
-<!--    &lt;!&ndash;获取所选订单中当前状态&ndash;&gt;-->
-<!--    <select id="getChosenOrder" parameterType="java.lang.String" resultType="com.xzsd.pc.order.entity.Order">-->
-<!--        SELECT-->
-<!--            order_id orderId,-->
-<!--            order_state_id orderStateId-->
-<!--        FROM-->
-<!--            t_info_order-->
-<!--        WHERE-->
-<!--            order_id IN-->
-<!--        <foreach collection="orderIds" item="item" index="index" open="(" separator="," close=")">-->
-<!--            #{item}-->
-<!--        </foreach>-->
-<!--    </select>-->
 
     <!--获取所选订单中的商品信息-->
     <select id="getOrderGoods" parameterType="java.lang.String" resultType="com.xzsd.pc.order.entity.OrderGoods">
@@ -109,23 +98,6 @@
             </where>
         </foreach>
     </update>
-
-<!--    &lt;!&ndash;更新所选订单中的销售量&ndash;&gt;-->
-<!--    <update id="updateOrderGoodsSales" parameterType="java.util.List">-->
-<!--        <foreach collection="goods" item="item" index="index" open="" separator=";" close=";">-->
-<!--            UPDATE t_info_goods-->
-<!--            <set>-->
-<!--                goods_sales = goods_sales - #{item.goodsCount},-->
-<!--                update_time = NOW(),-->
-<!--                update_user = #{item.updateUser},-->
-<!--                version = version + 1-->
-<!--            </set>-->
-<!--            <where>-->
-<!--                goods_id = #{item.goodsId,jdbcType=VARCHAR}-->
-<!--                AND version = #{item.version}-->
-<!--            </where>-->
-<!--        </foreach>-->
-<!--    </update>-->
 
     <!--修改订单状态-->
     <update id="updateOrderState" parameterType="java.util.List">

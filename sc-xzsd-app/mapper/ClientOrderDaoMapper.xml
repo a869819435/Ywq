@@ -23,7 +23,7 @@
             SET
                 goods_inventory = #{item.goodsInventory},
                 <if test="item.goodsInventory lte 0">
-                    goods_state_id = 0
+                    goods_state_id = 0,
                 </if>
                 update_time = NOW(),
                 update_user = #{item.updateUser},
@@ -115,6 +115,7 @@
                 AND a.order_state_id IN (4,5)
             </if>
         </if>
+        ORDER BY a.update_time DESC
     </select>
 
     <!--查询订单商品列表-->
@@ -165,6 +166,7 @@
             UPDATE t_info_goods
             SET
                 goods_inventory = goods_inventory + #{item.goodsCount},
+                goods_state_id = 1,
                 update_time = NOW(),
                 update_user = #{item.updateUser},
                 version = version + 1
@@ -242,35 +244,36 @@
             LEFT JOIN t_info_goods c ON c.goods_id = b.goods_id
         WHERE
             a.order_id = #{orderId}
+        ORDER BY a.create_time
     </select>
 
     <!--新增订单商品评价-->
     <insert id="addGoodsEvaluate" parameterType="java.util.List" >
         <foreach collection="evaluateList" item="item" index="i" open="" separator=";" close=";">
             INSERT INTO t_info_goods_evaluate(
-                evaluate_id,
-                evaluate_score,
-                evaluate_content,
-                user_id,
-                goods_id,
-                is_delete,
-                create_time,
-                create_user,
-                update_time,
-                update_user,
-                version
+            evaluate_id,
+            evaluate_score,
+            evaluate_content,
+            user_id,
+            goods_id,
+            is_delete,
+            create_time,
+            create_user,
+            update_time,
+            update_user,
+            version
             )VALUES(
-                    #{item.evaluateId},
-                    #{item.evaluateScore},
-                    #{item.evaluateContent},
-                    #{item.userId},
-                    #{item.goodsId},
-                    0,
-                    NOW(),
-                    #{item.userId},
-                    NOW(),
-                    #{item.userId},
-                    0 )
+            #{item.evaluateId},
+            #{item.evaluateScore},
+            #{item.evaluateContent},
+            #{item.userId},
+            #{item.goodsId},
+            0,
+            NOW(),
+            #{item.userId},
+            NOW(),
+            #{item.userId},
+            0 )
             <if test="item.imageList != null">
                 <foreach collection="item.imageList" item="image" index="j" open=";" separator=";" close="">
                     INSERT INTO t_info_evaluate_image(

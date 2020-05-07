@@ -1,5 +1,12 @@
 package com.xzsd.pc.goods.enums;
 
+/**
+ * 商品管理接口类
+ * @ClassName GoodsStateEnums
+ * @Description 商品状态枚举
+ * @Author ywq
+ * @Date 2020-03-26
+ */
 public enum GoodsStateEnums {
 
     /**

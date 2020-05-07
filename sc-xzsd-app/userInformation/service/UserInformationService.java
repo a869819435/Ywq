@@ -26,6 +26,8 @@ public class UserInformationService {
     /**
      * 获取用户详细信息
      * @return
+     * @Author ywq
+     * @Date 2020-04-16
      */
     public AppResponse getUser(){
         //获取当前账号id
@@ -52,6 +54,8 @@ public class UserInformationService {
      * 修改用户密码
      * @param userInfo
      * @return
+     * @Author ywq
+     * @Date 2020-04-16
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse updateUserPassword(UserInfo userInfo) {

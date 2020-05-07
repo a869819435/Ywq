@@ -9,9 +9,8 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * 商品管理接口类
  * @ClassName GoodsDao
- * @Description Goods
+ * @Description 商品管理接口类
  * @Author ywq
  * @Date 2020-03-26
  */
@@ -22,6 +21,8 @@ public interface GoodsDao {
      * 查询商品分类下拉框
      * @param classifyId
      * @return
+     * @Author ywq
+     * @Date 2020-03-26
      */
     List<GoodsClassify> listGoodsClassify(@Param("classifyId") String classifyId);
 
@@ -29,6 +30,8 @@ public interface GoodsDao {
      * 统计书号数量
      * @param goods 商品信息
      * @return
+     * @Author ywq
+     * @Date 2020-03-26
      */
     int countIsbn(Goods goods);
 
@@ -36,6 +39,8 @@ public interface GoodsDao {
      * 新增商品
      * @param goods
      * @return
+     * @Author ywq
+     * @Date 2020-03-26
      */
     int addGoods(Goods goods);
 
@@ -43,6 +48,8 @@ public interface GoodsDao {
      * 查询商品详情
      * @param goodsId
      * @return
+     * @Author ywq
+     * @Date 2020-03-26
      */
     Goods getGoods(@Param("goodsId") String goodsId);
 
@@ -50,6 +57,8 @@ public interface GoodsDao {
      * 分页查询商品
      * @param goods
      * @return
+     * @Author ywq
+     * @Date 2020-03-26
      */
     List<Goods> listGoodsByPage(Goods goods);
 
@@ -57,6 +66,8 @@ public interface GoodsDao {
      * 修改商品信息
      * @param goods
      * @return
+     * @Author ywq
+     * @Date 2020-03-26
      */
     int updateGoods(Goods goods);
 
@@ -64,6 +75,8 @@ public interface GoodsDao {
      * 修改商品信息状态
      * @param listUpdate
      * @return
+     * @Author ywq
+     * @Date 2020-03-26
      */
     int updateGoodsState(@Param(value = "listUpdate") List<Goods> listUpdate);
 
@@ -71,6 +84,8 @@ public interface GoodsDao {
      * 查看选中的商品是否在订单中
      * @param listGoodsId
      * @return
+     * @Author ywq
+     * @Date 2020-03-26
      */
     List<String> goodsIdInOrder(@Param("listGoodsId") List<String> listGoodsId);
 
@@ -79,7 +94,8 @@ public interface GoodsDao {
      * @param listGoodsId
      * @param updateUser
      * @return
+     * @Author ywq
+     * @Date 2020-03-26
      */
     int deleteGoods(@Param("listGoodsId") List<String> listGoodsId, @Param("updateUser") String updateUser);
-
 }

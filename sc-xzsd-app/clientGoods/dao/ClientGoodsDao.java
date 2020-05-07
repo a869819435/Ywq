@@ -22,13 +22,26 @@ public interface ClientGoodsDao {
      * 查询商品信息详情接口
      * @param goodsId
      * @return
+     * @Author ywq
+     * @Date 2020-04-17
      */
     ClientGoodsInfo getGoods(@Param("goodsId") String goodsId);
+
+    /**
+     * 更新商品浏览量
+     * @param goodsId
+     * @return
+     * @Author ywq
+     * @Date 2020-04-17
+     */
+    int updateGoodsViews(@Param("goodsId") String goodsId);
 
     /**
      * 查询商品评价列表接口
      * @param clientGoodsEvaluates
      * @return
+     * @Author ywq
+     * @Date 2020-04-17
      */
     List<ClientGoodsEvaluatesVO> listGoodsEvaluatesByPage(ClientGoodsEvaluates clientGoodsEvaluates);
 
@@ -37,12 +50,16 @@ public interface ClientGoodsDao {
      * @param evaluateIds
      * @param evaluateScore
      * @return
+     * @Author ywq
+     * @Date 2020-04-17
      */
     List<ClientGoodsEvaluates> listImagePath(@Param("evaluateIds") List<String> evaluateIds,@Param("evaluateScore") int evaluateScore);
 
     /**
      * 查询一级商品分类列接口
      * @return
+     * @Author ywq
+     * @Date 2020-04-17
      */
     List<ClientGoodsClassify> listOneGoodsClassify();
 
@@ -50,6 +67,8 @@ public interface ClientGoodsDao {
      * 查询二级商品分类以及商品接口
      * @param classifyId
      * @return
+     * @Author ywq
+     * @Date 2020-04-17
      */
     List<ClientGoodsClassify> listGetClassGoods(@Param("classifyId") String classifyId);
 }

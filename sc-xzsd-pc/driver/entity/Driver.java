@@ -38,7 +38,7 @@ public class Driver {
     /**
      * 司机电话
      */
-    private String phone;
+    private long phone;
     /**
      * 司机负责省的编号
      */
@@ -144,11 +144,11 @@ public class Driver {
         this.userPassword = userPassword;
     }
 
-    public String getPhone() {
+    public long getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
+    public void setPhone(long phone) {
         this.phone = phone;
     }
 

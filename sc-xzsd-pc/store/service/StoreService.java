@@ -32,6 +32,8 @@ public class StoreService {
      * 新增门店
      * @param store
      * @return
+     * @Author ywq
+     * @Date 2020-04-12
      */
     @Transactional(rollbackFor = Exception.class )
     public AppResponse addStore(Store store,String nowRole){
@@ -60,7 +62,14 @@ public class StoreService {
             return AppResponse.versionError(error);
         }
         //生成门店邀请码
-        store.setInviteCode(store.getAreaId() + StringUtil.getRankNumLetter(6));
+        store.setInviteCode(StringUtil.getRankNumLetter(6));
+        //校验邀请码是否存在
+        int countInvite = storeDao.countInvite(store.getInviteCode());
+        //存在就重新生成邀请码
+        while( countInvite != 0 ){
+            store.setInviteCode(StringUtil.getRankNumLetter(6));
+            countInvite = storeDao.countInvite(store.getInviteCode());
+        }
         //生成门店编号
         store.setStoreId("st" + StringUtil.getCommonCode(2));
         //新增用户
@@ -75,6 +84,8 @@ public class StoreService {
      * 查看门店详情
      * @param storeId
      * @return
+     * @Author ywq
+     * @Date 2020-04-12
      */
     public AppResponse getStore(String storeId){
         Store user = storeDao.getStore(storeId);
@@ -87,6 +98,8 @@ public class StoreService {
      * @param userName
      * @param role
      * @return
+     * @Author ywq
+     * @Date 2020-04-12
      */
     public AppResponse listStores(Store store,String userName,String role){
         store.setUserId(SecurityUtils.getCurrentUserId());
@@ -98,9 +111,15 @@ public class StoreService {
      * 修改门店信息
      * @param store
      * @return
+     * @Author ywq
+     * @Date 2020-04-12
      */
     @Transactional(rollbackFor = Exception.class)
-    public AppResponse updateStore(Store store){
+    public AppResponse updateStore(Store store,String nowRole){
+        //店长不能修改门店信息
+        if (nowRole.equals(RoleEnums.MANAGE.getType())){
+            return AppResponse.versionError("您的权限不足");
+        }
         //校验店长是否存在、电话是否已是别的店所用、用户是否已经是店长、营业执照是否已被使用
         int countStoreInfo = storeDao.countStoreInfo(store);
         String error = "";
@@ -132,6 +151,8 @@ public class StoreService {
      * 删除门店
      * @param storeId
      * @return
+     * @Author ywq
+     * @Date 2020-04-12
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse deleteStore(String storeId,String nowRole){
@@ -153,5 +174,4 @@ public class StoreService {
         }
         return AppResponse.success("删除门店成功！");
     }
-
 }

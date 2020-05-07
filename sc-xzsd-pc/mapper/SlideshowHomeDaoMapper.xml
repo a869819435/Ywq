@@ -2,34 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.xzsd.pc.slideshowHome.dao.SlideshowHomeDao">
 
-    <!--查询轮播图对应的商品是否存在-->
-    <select id="countGoodsId" parameterType="java.lang.String" resultType="int">
-        SELECT
-            COUNT(goods_id)
-        FROM
-            t_info_slideshow_home
-        WHERE
-            is_delete = 0
-            AND goods_id = #{goodsId}
-        <if test="slideshowId != null and slideshowId != '' ">
-            AND slideshow_id != #{slideshowId}
-        </if>
-    </select>
-
-    <!--查询轮播图对应的序号是否存在-->
-    <select id="countSlideshowNum" parameterType="int" resultType="int">
-        SELECT
-            COUNT(slideshow_num)
-        FROM
-            t_info_slideshow_home
-        WHERE
-            is_delete = 0
-            AND slideshow_num = #{slideshowNum}
-        <if test="slideshowId != null and slideshowId != '' ">
-            AND slideshow_id != #{slideshowId}
-        </if>
-    </select>
-
     <!--校验轮播图中不可重复信息是否存在重复-->
     <select id="countSlideshowInfo" parameterType="com.xzsd.pc.slideshowHome.entity.SlideshowHome" resultType="int">
         SELECT
@@ -130,7 +102,7 @@
             AND a.goods_name like concat('%', #{goodsName}, '%')
         </if>
         <if test="goodsId != null and '' != goodsId ">
-            AND a.goods_id = #{goodsId}
+            AND a.goods_id like concat('%', #{goodsId}, '%')
         </if>
         ORDER BY a.create_time DESC
     </select>

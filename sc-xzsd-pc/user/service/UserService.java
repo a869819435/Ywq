@@ -33,14 +33,18 @@ public class UserService {
      * 新增用户
      * @param user
      * @return
+     * @Author ywq
+     * @Date 2020-03-24
      */
     @Transactional(rollbackFor = Exception.class )
     public AppResponse addUser(User user){
         //获取用户id
         String createUser = SecurityUtils.getCurrentUserId();
         //获取当前登录角色
-        String nowRole = user.getNowRole();
-        if (nowRole.equals(user.getRole()) ){
+        int nowRole = Integer.valueOf(user.getNowRole());
+        //当前新增的角色
+        int role = Integer.valueOf(user.getRole());
+        if ( role <= nowRole ){
             return AppResponse.versionError("您的权限不足");
         }
         //校验账号、手机号是否存在
@@ -74,6 +78,8 @@ public class UserService {
      * 查看用户详情
      * @param userId
      * @return
+     * @Author ywq
+     * @Date 2020-03-24
      */
     public AppResponse getUser(String userId){
         //获取用户详情信息
@@ -84,8 +90,11 @@ public class UserService {
      * 查询用户列表（分页）
      * @param user
      * @return
+     * @Author ywq
+     * @Date 2020-03-24
      */
     public AppResponse listUsers(User user){
+        user.setUserId(SecurityUtils.getCurrentUserId());
         List<User> userList = userDao.listUsersByPage(user);
         return AppResponse.success("查询成功!",getPageInfo(userList));
     }
@@ -94,14 +103,27 @@ public class UserService {
      * 修改用户信息
      * @param user
      * @return
+     * @Author ywq
+     * @Date 2020-03-24
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse updateUser(User user){
         //获取用户id
         String updateUser = SecurityUtils.getCurrentUserId();
-        String nowRole = user.getNowRole();;
-        if (nowRole.equals(user.getRole()) ){
-            return AppResponse.versionError("您的权限不足");
+        //获取当前登录角色
+        int nowRole = Integer.valueOf(user.getNowRole());
+        //当前新增的角色
+        int role = Integer.valueOf(user.getRole());
+        if ( !updateUser.equals(user.getUserId()) ){
+            //当修改的账号不为自己的时候
+            if ( role <= nowRole ){
+                return AppResponse.versionError("您的权限不足");
+            }
+        }else{
+            //当修改的账号为自己的账号的时候
+            if ( role != nowRole ){
+                return AppResponse.versionError("不可以修改自己的角色");
+            }
         }
         AppResponse appResponse = AppResponse.success("修改成功！");
         //校验账号、手机号是否存在
@@ -133,6 +155,8 @@ public class UserService {
      * 删除用户
      * @param userId
      * @return
+     * @Author ywq
+     * @Date 2020-03-24
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse deleteUser(String userId,String role,String nowRole){
@@ -149,9 +173,9 @@ public class UserService {
         //记录角色编号为2的用户
         List<String> userIdOfManager = new ArrayList<>();
         for (int i = 0 ; i < roles.size() ; i++ ){
-            //管理员不能删管理员
-            if (roles.get(i).equals(nowRole)){
-                return AppResponse.versionError("删除账号为" + listUserId.get(i) + "的用户权限不足");
+            //不能删自己的账号
+            if (listUserId.get(i).equals(updateUser)){
+                return AppResponse.versionError("不可以删除自己的账号");
             }
             //是店长的用户
             if (roles.get(i).equals(RoleEnums.MANAGE.getType())){
@@ -161,7 +185,7 @@ public class UserService {
         if (userIdOfManager != null && userIdOfManager.size() != 0 ){
             //获取有门店的店长编号
             List<String> havingStore = userDao.getHavingStore(userIdOfManager);
-            if( havingStore != null || havingStore.size() != 0 ){
+            if( havingStore != null && havingStore.size() != 0 ){
                 String errorInformation = StringUtils.join(havingStore.toString(),",");
                 return AppResponse.versionError("店长编号" + errorInformation + "有绑定门店");
             }

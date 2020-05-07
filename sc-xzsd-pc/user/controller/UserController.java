@@ -1,6 +1,5 @@
 package com.xzsd.pc.user.controller;
 
-import com.neusoft.core.exception.ScServerException;
 import com.neusoft.core.restful.AppResponse;
 import com.xzsd.pc.user.entity.User;
 import com.xzsd.pc.user.service.UserService;

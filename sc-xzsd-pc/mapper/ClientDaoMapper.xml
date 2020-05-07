@@ -15,7 +15,6 @@
         FROM
             t_info_client a
             LEFT JOIN t_sys_user b ON a.user_id = b.user_id
-            AND a.is_delete = 0
         <if test="userName != null and userName != '' ">
             AND user_name like concat('%', #{userName},'%')
         </if>
@@ -24,11 +23,15 @@
         </if>
         <if test="role == 2">
             LEFT JOIN t_info_store c ON a.invite_code = c.invite_code
-            AND c.is_delete = 0
-        WHERE
-            c.user_id = #{nowLogin}
         </if>
-            ORDER BY a.create_time DESC
+        WHERE
+            a.is_delete = 0
+            AND b.is_delete = 0
+        <if test="role == 2">
+            AND c.is_delete = 0
+            AND c.user_id = #{nowLogin}
+        </if>
+        ORDER BY a.create_time DESC
     </select>
 
 </mapper>

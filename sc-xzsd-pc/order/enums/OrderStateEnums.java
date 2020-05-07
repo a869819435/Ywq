@@ -1,5 +1,11 @@
 package com.xzsd.pc.order.enums;
 
+/**
+ * @ClassName OrderStateEnums
+ * @Derecation 订单状态枚举
+ * @Author ywq
+ * @Date 2020-04-10
+ */
 public enum OrderStateEnums {
 
     /**

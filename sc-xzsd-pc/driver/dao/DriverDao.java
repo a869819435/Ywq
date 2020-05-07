@@ -20,6 +20,8 @@ public interface DriverDao {
      * 新增司机
      * @param driver
      * @return
+     * @Author ywq
+     * @Date 2020-04-13
      */
     int addDriver(Driver driver);
 
@@ -27,6 +29,8 @@ public interface DriverDao {
      * 获取司机详情
      * @param driverId
      * @return
+     * @Author ywq
+     * @Date 2020-04-13
      */
     Driver getDriver(@Param("driverId") String driverId);
 
@@ -35,6 +39,8 @@ public interface DriverDao {
      * @param Driver
      * @param nowLogin
      * @return
+     * @Author ywq
+     * @Date 2020-04-13
      */
     List<Driver> listDriverByPage(@Param("Dr") Driver Driver, @Param("nowLogin") String nowLogin);
 
@@ -42,6 +48,8 @@ public interface DriverDao {
      * 修改司机信息
      * @param driver
      * @return
+     * @Author ywq
+     * @Date 2020-04-13
      */
     int updateDriver(Driver driver);
 
@@ -50,6 +58,8 @@ public interface DriverDao {
      * @param listDriverId
      * @param updateUser
      * @return
+     * @Author ywq
+     * @Date 2020-04-13
      */
     int deleteDriver(@Param("listDriverId") List<String> listDriverId, @Param("updateUser") String updateUser);
 }

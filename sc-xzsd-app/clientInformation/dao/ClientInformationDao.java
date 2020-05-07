@@ -16,6 +16,8 @@ public interface ClientInformationDao {
      * 检验邀请码是否存在
      * @param inviteCode
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     int countInviteCode(@Param("inviteCode") String inviteCode);
 
@@ -24,6 +26,8 @@ public interface ClientInformationDao {
      * @param userId
      * @param inviteCode
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     int updateClientInvite(@Param("userId")String userId,@Param("inviteCode") String inviteCode);
 }

@@ -14,9 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 
 /**
- * 商品管理
  * @ClassName GoodsController
- * @Description GoodsManger
+ * @Description 商品管理
  * @Author ywq
  * @Date 2020-03-26
  */
@@ -132,9 +131,9 @@ public class GoodsController {
      * @Date 2020-03-26
      */
     @PostMapping("updateGoodsShelfState")
-    public AppResponse updateGoodsState(Goods goods,String goodsInventory){
+    public AppResponse updateGoodsState(Goods goods,String goodsInventories){
         try{
-            return goodsService.updateGoodsState(goods,goodsInventory);
+            return goodsService.updateGoodsState(goods,goodsInventories);
         }catch (Exception e){
             logger.error("修改商品状态失败",e);
             System.out.println(e.toString());

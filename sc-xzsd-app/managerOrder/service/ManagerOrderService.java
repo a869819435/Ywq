@@ -2,6 +2,9 @@ package com.xzsd.app.managerOrder.service;
 
 import com.neusoft.core.restful.AppResponse;
 import com.neusoft.security.client.utils.SecurityUtils;
+import com.xzsd.app.clientOrder.dao.ClientOrderDao;
+import com.xzsd.app.clientOrder.entity.OrderGoods;
+import com.xzsd.app.clientOrder.enums.OrderStateEnums;
 import com.xzsd.app.managerOrder.dao.ManagerOrderDao;
 import com.xzsd.app.managerOrder.entity.ManagerOrderData;
 import com.xzsd.app.managerOrder.entity.ManagerOrderDeepenVO;
@@ -30,10 +33,15 @@ public class ManagerOrderService {
     @Resource
     private ManagerOrderDao managerOrderDao;
 
+    @Resource
+    private ClientOrderDao clientOrderDao;
+
     /**
      * 查询店长订单列表
      * @param orderStateId
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     public AppResponse listManagerOrders(String orderStateId){
         //获取当前登录人id
@@ -71,11 +79,28 @@ public class ManagerOrderService {
      * @param orderStateId
      * @param version
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse updateManagerOrderState(String orderId,String orderStateId,String version){
         //获取当前登录人id为修改人
         String updateUser = SecurityUtils.getCurrentUserId();
+        //当订单要修改的状态为取消订单的时候涉及的商品信息更新
+        if (OrderStateEnums.DELETED.getType().equals(orderStateId)){
+            List<OrderGoods> orderGoodsList = clientOrderDao.getOrderGoods(orderId);
+            for (OrderGoods i : orderGoodsList){
+                i.setUpdateUser(updateUser);
+            }
+            int countGoods = 0;
+            //当更改的状态为取消订单时,库存增加
+            if ( OrderStateEnums.DELETED.getType().equals(orderStateId) ){
+                countGoods = clientOrderDao.addGoodsInventory(orderGoodsList);
+            }
+            if (countGoods == 0){
+                return AppResponse.versionError("操作失败，请重试");
+            }
+        }
         int count = managerOrderDao.updateManagerOrderState(orderId,orderStateId,updateUser,version);
         if (count == 0){
             return AppResponse.versionError("操作失败请重试");
@@ -87,6 +112,8 @@ public class ManagerOrderService {
      * 查询店长订单详情
      * @param orderId
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     public AppResponse listManagerOrderDeepen(String orderId){
         List<ManagerOrderDeepenVO> managerOrderDeepenVOList = managerOrderDao.listManagerOrderDeepen(orderId);
@@ -102,6 +129,8 @@ public class ManagerOrderService {
      * 对订单详情进行初始化和赋值
      * @param managerOrderDeepenVOList
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     private ManagerOrderDeepenVO getOrderDeepenInfo(List<ManagerOrderDeepenVO> managerOrderDeepenVOList){
         //初始化订单详情信息列表

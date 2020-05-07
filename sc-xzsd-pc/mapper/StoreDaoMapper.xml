@@ -2,60 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.xzsd.pc.store.dao.StoreDao">
 
-    <!--统计用户编号-->
-    <select id="countUserId" parameterType="java.lang.String" resultType="int">
-        SELECT
-            COUNT(user_id)
-        FROM
-            t_sys_user
-        WHERE
-            is_delete = 0
-            AND user_id = #{userId}
-            AND role = '2'
-    </select>
-
-    <!--统计电话数量-->
-    <select id="countPhone" parameterType="java.lang.String" resultType="int">
-        SELECT
-            COUNT(phone)
-        FROM
-            t_info_store
-        WHERE
-            is_delete = 0
-            AND phone = #{phone}
-        <if test="storeId != null and storeId != '' ">
-            AND store_id != #{storeId}
-        </if>
-    </select>
-
-    <!--统计门店长编号数量-->
-    <select id="countManagerId" parameterType="java.lang.String" resultType="int">
-        SELECT
-            COUNT(user_id)
-        FROM
-            t_info_store
-        WHERE
-            is_delete = 0
-            AND user_id = #{userId}
-        <if test="storeId != null and storeId != '' ">
-            AND store_id != #{storeId}
-        </if>
-    </select>
-
-    <!--统计门店营业执照编号数量-->
-    <select id="countBusinessCode" parameterType="java.lang.String" resultType="int">
-        SELECT
-            COUNT(business_code)
-        FROM
-            t_info_store
-        WHERE
-            is_delete = 0
-            AND business_code = #{businessCode}
-        <if test="storeId != null and storeId != '' ">
-            AND store_id != #{storeId}
-        </if>
-    </select>
-
     <!--校验店长是否存在、电话是否已是别的店所用、用户是否已经是店长、营业执照是否已被使用-->
     <select id="countStoreInfo" parameterType="com.xzsd.pc.store.entity.Store" resultType="int">
         SELECT
@@ -78,6 +24,17 @@
         <if test="storeId != null and storeId != '' ">
             AND store_id != #{storeId}
         </if>
+    </select>
+
+    <!--校验邀请码是否存在-->
+    <select id="countInvite" parameterType="java.lang.String" resultType="int">
+        SELECT
+            COUNT(invite_code)
+        FROM
+            t_info_store
+        WHERE
+            is_delete = 0
+            AND invite_code = #{inviteCode}
     </select>
 
     <!--新增门店-->
@@ -180,7 +137,7 @@
             AND a.area_id = #{store.areaId}
         </if>
         <if test=" role == 2 ">
-            AND a.user_id = #{store.userId}
+            AND a.user_id LIKE concat('%',#{store.userId},'%')
         </if>
         ORDER BY a.create_time DESC
     </select>

@@ -32,6 +32,8 @@ public class SlideshowHomeService {
      * 添加首页轮播图实现
      * @param slideshowHome
      * @return
+     * @Author ywq
+     * @Date 2020-04-05
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse addSlideshowHome(SlideshowHome slideshowHome){
@@ -59,6 +61,8 @@ public class SlideshowHomeService {
      * 分页查询首页轮播图实现
      * @param slideshowStateId
      * @return
+     * @Author ywq
+     * @Date 2020-04-05
      */
     public AppResponse listSlideshowHome(String slideshowStateId){
         List<SlideshowHome> slideshowHomeList = slideshowHomeDao.listSlideshowHomeByPage(slideshowStateId);
@@ -70,6 +74,8 @@ public class SlideshowHomeService {
      * @param goodsName
      * @param goodsId
      * @return
+     * @Author ywq
+     * @Date 2020-04-05
      */
     public AppResponse listGoods(String goodsName,String goodsId){
         List<Goods> goodsList = slideshowHomeDao.listGoodsByPage(goodsName,goodsId);
@@ -82,6 +88,8 @@ public class SlideshowHomeService {
      * @param slideshowStateId
      * @param version
      * @return
+     * @Author ywq
+     * @Date 2020-04-05
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse updateSlideshowHomeState(String slideshowId,String slideshowStateId,String version){
@@ -112,6 +120,8 @@ public class SlideshowHomeService {
      * 删除首页轮播图
      * @param slideshowId
      * @return
+     * @Author ywq
+     * @Date 2020-04-05
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse deleteSlideshowHome(String slideshowId){

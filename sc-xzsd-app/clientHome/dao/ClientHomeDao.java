@@ -18,12 +18,16 @@ public interface ClientHomeDao {
     /**
      * 查询首页轮播图信息接口
      * @return
+     * @Author ywq
+     * @Date 2020-04-17
      */
     List<ClientHomeSlideshowInfo> listRotationCharHome();
 
     /**
      * 获取热门商品展示数量接口
      * @return
+     * @Author ywq
+     * @Date 2020-04-17
      */
     int getHotGoodsShowNum();
 
@@ -31,6 +35,8 @@ public interface ClientHomeDao {
      * 查询热门商品信息接口
      * @param showNum
      * @return
+     * @Author ywq
+     * @Date 2020-04-17
      */
     List<ClientHomeGoodsInfo> listHotGoods(@Param("showNum") int showNum);
 }

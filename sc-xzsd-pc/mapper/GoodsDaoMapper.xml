@@ -95,6 +95,7 @@
             a.two_classify_id twoClassifyId,
             c.classify_name twoClassifyName,
             a.goods_describe goodsDescribe,
+            a.goods_state_id goodsStateId,
             a.supplier_name supplierName,
             a.goods_inventory goodsInventory,
             a.goods_original_cost goodsOriginalCost,
@@ -129,6 +130,7 @@
             a.supplier_name supplierName,
             a.goods_image_path goodsImagePath,
             a.goods_inventory goodsInventory,
+            a.goods_views_num goodsViewsNum,
             a.isbn,
             a.goods_id goodsId,
             a.version
@@ -156,9 +158,7 @@
         ORDER BY a.create_time DESC
     </select>
 
-    <!--修改商品信息 e1 lte e2：小于等于
-                    e1 gt e2：大于
-                    e1 gte e2：大于等于-->
+    <!--修改商品信息 e1 lte e2：小于等于 e1 gt e2：大于 e1 gte e2：大于等于-->
     <update id="updateGoods" parameterType="com.xzsd.pc.goods.entity.Goods">
         UPDATE t_info_goods
         SET
@@ -167,6 +167,7 @@
             one_classify_Id = #{oneClassifyId},
             two_classify_Id = #{twoClassifyId},
             goods_describe = #{goodsDescribe},
+            goods_state_id = #{goodsStateId},
             supplier_name = #{supplierName},
             goods_inventory = #{goodsInventory},
             goods_original_cost = #{goodsOriginalCost},
@@ -213,8 +214,10 @@
         FROM
             t_info_order_deepen a
             LEFT JOIN t_info_goods b ON a.goods_id = b.goods_id
+            LEFT JOIN t_info_order c ON a.order_id = c.order_id
         WHERE
             a.is_delete = 0
+            AND c.order_state_id NOT IN(4,5)
             AND a.goods_id IN
             <foreach collection="listGoodsId" item="item" index="index" open="(" separator="," close=")">
                 #{item}

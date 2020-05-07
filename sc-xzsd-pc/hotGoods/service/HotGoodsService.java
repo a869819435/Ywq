@@ -31,6 +31,8 @@ public class HotGoodsService {
      * 添加热门商品
      * @param hotGoods
      * @return
+     * @Author ywq
+     * @Date 2020-04-11
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse addHotGoods(HotGoods hotGoods){
@@ -59,6 +61,8 @@ public class HotGoodsService {
      * 获取热门商品详情
      * @param hotGoodsId
      * @return
+     * @Author ywq
+     * @Date 2020-04-11
      */
     public AppResponse getHotGoods(String hotGoodsId){
         HotGoods hotGoods = hotGoodsDao.getHotGoods(hotGoodsId);
@@ -70,6 +74,8 @@ public class HotGoodsService {
      * @param goodsId
      * @param goodsName
      * @return
+     * @Author ywq
+     * @Date 2020-04-11
      */
     public AppResponse listHotGoods(String goodsId,String goodsName){
         List<HotGoods> hotGoodsList = hotGoodsDao.listHotGoodsByPage(goodsId,goodsName);
@@ -80,6 +86,8 @@ public class HotGoodsService {
      * 修改热门商品信息
      * @param hotGoods
      * @return
+     * @Author ywq
+     * @Date 2020-04-11
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse updateHotGoods(HotGoods hotGoods){
@@ -111,6 +119,8 @@ public class HotGoodsService {
     /**
      * 查询热门商品展示数量
      * @return
+     * @Author ywq
+     * @Date 2020-04-11
      */
     public AppResponse getHotGoodsShowNum(){
         HotGoodsShowNumVO hotGoodsShowNum = hotGoodsDao.getHotGoodsShowNum();
@@ -121,6 +131,8 @@ public class HotGoodsService {
      * 修改热门商品展示数量
      * @param version
      * @return
+     * @Author ywq
+     * @Date 2020-04-11
      */
     @Transactional(rollbackFor = Exception.class )
     public AppResponse updateHotGoodsShowNum(String hotGoodsShowNum,String version){
@@ -137,6 +149,8 @@ public class HotGoodsService {
      * 删除热门商品
      * @param hotGoodsId
      * @return
+     * @Author ywq
+     * @Date 2020-04-11
      */
     @Transactional(rollbackFor = Exception.class )
     public AppResponse deleteHotGoods(String hotGoodsId){

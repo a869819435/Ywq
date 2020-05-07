@@ -20,6 +20,15 @@
             goods_id = #{goodsId}
     </select>
 
+    <!--更新浏览量-->
+    <update id="updateGoodsViews" parameterType="java.lang.String" >
+        UPDATE t_info_goods
+        SET
+            goods_views_num = goods_views_num + 1
+        WHERE
+            goods_id = #{goodsId}
+    </update>
+
     <!--查询商品评价列表接口-->
     <select id="listGoodsEvaluatesByPage" parameterType="com.xzsd.app.clientGoods.entity.ClientGoodsEvaluates" resultType="com.xzsd.app.clientGoods.entity.ClientGoodsEvaluatesVO">
         SELECT
@@ -44,7 +53,7 @@
         <if test="evaluateScore == 5">
             AND a.evaluate_score BETWEEN 4 AND 5
         </if>
-            ORDER BY a.create_time DESC
+        ORDER BY a.create_time DESC
     </select>
 
     <!--查询评价图片列表接口-->
@@ -62,7 +71,7 @@
             #{item}
         </foreach>
         <if test="evaluateScore == 1">
-            AND a.evaluate_score BETWEEN 0 AND 1
+            AND a.evaluate_score = 1
         </if>
         <if test="evaluateScore == 3">
             AND a.evaluate_score BETWEEN 2 AND 3
@@ -98,6 +107,7 @@
             t_info_goods_classify a
             LEFT JOIN t_info_goods b ON b.is_delete = 0
             AND a.classify_id = b.two_classify_id
+            AND b.goods_state_id = 1
         WHERE
             a.is_delete = 0
             AND a.classify_parent = #{classifyId}

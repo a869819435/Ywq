@@ -39,6 +39,7 @@
             LEFT JOIN t_info_goods b ON a.goods_id = b.goods_id
         WHERE
             a.is_delete = 0
+            AND b.goods_state_id = 1
         ORDER BY a.hot_goods_num,a.create_time DESC
         LIMIT #{showNum}
         <!--limit n 等同于 limit 0,n-->

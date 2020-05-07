@@ -23,12 +23,12 @@
             b.menu_path menuPath
         FROM
             t_sys_menu_role a
-            LEFT JOIN t_sys_menu b ON a.is_delete = 0
-            AND b.is_delete = 0
+            LEFT JOIN t_sys_menu b ON b.is_delete = 0
             AND a.menu_id = b.menu_id
         WHERE
             a.role = #{role}
-            ORDER BY a.create_time
+            AND a.is_delete = 0
+        ORDER BY a.create_time
     </select>
 
     <!--统计菜单名称数量-->
@@ -68,6 +68,34 @@
                 #{menuComment},
                 #{isMenu},
                 #{parentMenu},
+                0,
+                NOW(),
+                #{createUser},
+                NOW(),
+                #{createUser},
+                0
+        );
+        INSERT INTO t_sys_menu_role(
+            role,
+            menu_id,
+            is_delete,
+            create_time,
+            create_user,
+            update_time,
+            update_user,
+            version
+        )VALUES(
+                0,
+                #{menuId},
+                0,
+                NOW(),
+                #{createUser},
+                NOW(),
+                #{createUser},
+                0
+        ),(
+                1,
+                #{menuId},
                 0,
                 NOW(),
                 #{createUser},
@@ -117,6 +145,15 @@
             update_time =NOW(),
             update_user = #{updateUser}
         WHERE
+            menu_id = #{menuId};
+        UPDATE
+            t_sys_menu_role
+        SET
+            is_delete = 1,
+            update_time =NOW(),
+            update_user = #{updateUser}
+        WHERE
             menu_id = #{menuId}
+            AND role IN (0,1)
     </update>
 </mapper>

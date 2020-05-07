@@ -16,6 +16,8 @@ public interface UserInformationDao {
      * 获取用户角色编号
      * @param userId
      * @return
+     * @Author ywq
+     * @Date 2020-04-16
      */
     String getUserRole(@Param("userId") String userId);
 
@@ -24,6 +26,8 @@ public interface UserInformationDao {
      * @param userId
      * @param role
      * @return
+     * @Author ywq
+     * @Date 2020-04-16
      */
     UserInfo getUser(@Param("userId") String userId, @Param("role") String role);
 
@@ -31,6 +35,8 @@ public interface UserInformationDao {
      * 获取用户密码
      * @param userId
      * @return
+     * @Author ywq
+     * @Date 2020-04-16
      */
     String getUserPassword(@Param("userId") String userId);
 
@@ -38,6 +44,8 @@ public interface UserInformationDao {
      * 修改用户密码
      * @param userInfo
      * @return
+     * @Author ywq
+     * @Date 2020-04-16
      */
     int updateUserPassword(UserInfo userInfo);
 }

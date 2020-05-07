@@ -37,6 +37,8 @@ public class DriverService {
      * 添加司机信息
      * @param driver
      * @return
+     * @Author ywq
+     * @Date 2020-04-13
      */
     @Transactional(rollbackFor = Exception.class )
     public AppResponse addDriver(Driver driver,String nowRole){
@@ -53,7 +55,7 @@ public class DriverService {
         //设置固定司机角色编号
         user.setRole(RoleEnums.DRIVER.getType());
         driver.setRole(RoleEnums.DRIVER.getType());
-        //校验用户账号、司机电弧是否存在
+        //校验用户账号、司机电话是否存在
         int countDriverInfo = userDao.countInfo(user);
         String errorInfo = "";
         if( (countDriverInfo & 1) == 1){
@@ -82,6 +84,8 @@ public class DriverService {
      * 查看司机详情
      * @param driverId
      * @return
+     * @Author ywq
+     * @Date 2020-04-13
      */
     public AppResponse getDriver(String driverId){
         Driver driver = driverDao.getDriver(driverId);
@@ -93,6 +97,8 @@ public class DriverService {
      * 查询司机列表（分页）
      * @param driver
      * @return
+     * @Author ywq
+     * @Date 2020-04-13
      */
     public AppResponse listDrivers(Driver driver){
         //获取当前登录人id
@@ -105,6 +111,8 @@ public class DriverService {
      * 修改司机信息
      * @param driver
      * @return
+     * @Author ywq
+     * @Date 2020-04-13
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse updateDriver(Driver driver,String nowRole){
@@ -147,6 +155,8 @@ public class DriverService {
      * 删除司机
      * @param driverId
      * @return
+     * @Author ywq
+     * @Date 2020-04-13
      */
     @Transactional(rollbackFor = Exception.class)
     public AppResponse deleteDriver(String driverId,String nowRole){

@@ -57,36 +57,6 @@
             AND classify_id = #{classifyId}
     </select>
 
-<!--    &lt;!&ndash;商品分类结果集&ndash;&gt;-->
-<!--    <resultMap id="OneClassifyList" type="com.xzsd.pc.goodsClassify.entity.GoodsClassifyVO">-->
-<!--        <id property="classify_id" column="classifyId" jdbcType="VARCHAR"/>-->
-<!--        <result property="classify_name" column="classifyName" jdbcType="VARCHAR"/>-->
-<!--        <result property="version" column="version" jdbcType="VARCHAR"/>-->
-<!--        <collection property="twoClassifyList" resultMap="twoClassifyMap"/>-->
-<!--    </resultMap>-->
-<!--    <resultMap id="twoClassifyMap" type="com.xzsd.pc.goodsClassify.entity.GoodsClassifyVO">-->
-<!--        <id property="two_classify_id" column="classifyId" jdbcType="VARCHAR"/>-->
-<!--        <result property="two_classify_name" column="classifyName" jdbcType="VARCHAR"/>-->
-<!--        <result property="two_version" column="version" jdbcType="VARCHAR"/>-->
-<!--    </resultMap>-->
-
-<!--    &lt;!&ndash;查询商品分类下拉框&ndash;&gt;-->
-<!--    <select id="listClassify" resultMap="OneClassifyList">-->
-<!--        SELECT-->
-<!--            a.classify_id,-->
-<!--            a.classify_name,-->
-<!--            a.version,-->
-<!--            b.classify_id two_classify_id,-->
-<!--            b.classify_name two_classify_name,-->
-<!--            b.version two_version-->
-<!--        FROM-->
-<!--            t_info_goods_classify a-->
-<!--            INNER JOIN t_info_goods_classify b ON a.is_delete = 0-->
-<!--            AND b.is_delete = 0-->
-<!--            AND a.classify_parent = 0-->
-<!--            AND b.classify_parent = a.classify_id-->
-<!--    </select>-->
-
     <!--获取全部的分类列表-->
     <select id="listClassify" resultType="com.xzsd.pc.goodsClassify.entity.GoodsClassify">
         SELECT
@@ -115,26 +85,18 @@
             AND version = #{version}
     </update>
 
-    <!--查询给分类的子分类数量-->
-    <select id="countNextClassify" parameterType="java.lang.String" resultType="int" >
+    <!--查询该商品分类是否有商品，以及分类-->
+    <select id="countNextInfo" parameterType="java.lang.String" resultType="int">
         SELECT
-            COUNT(classify_id)
+            IF( COUNT(classify_id)!=0,1,0 )
+        <if test="classifyParent != null and classifyParent != '' " >
+            + IF((SELECT COUNT(two_classify_id) FROM t_info_goods WHERE is_delete = 0 AND two_classify_id = #{classifyId})!=0,2,0 )
+        </if>
         FROM
             t_info_goods_classify
         WHERE
             classify_parent = #{classifyId}
             AND is_delete = 0
-    </select>
-
-    <!--查询当前分类是否有商品-->
-    <select id="countNextGoods" parameterType="java.lang.String" resultType="int" >
-        SELECT
-            COUNT(two_classify_id)
-        FROM
-            t_info_goods
-        WHERE
-            is_delete = 0
-            AND two_classify_id = #{classifyId}
     </select>
 
     <!--删除商品分类-->

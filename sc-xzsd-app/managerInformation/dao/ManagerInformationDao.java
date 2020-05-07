@@ -19,6 +19,8 @@ public interface ManagerInformationDao {
      * 查询负责店长门店的司机信息接口
      * @param userId
      * @return
+     * @Author ywq
+     * @Date 2020-04-19
      */
     List<DriverInfo> listManagerDrivers(@Param("userId") String userId);
 

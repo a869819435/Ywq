@@ -28,6 +28,7 @@
                 AND a.order_state_id IN (4,5)
             </if>
         </if>
+        ORDER BY a.create_time DESC
     </select>
 
     <!--查询店长订单的商品信息列表-->

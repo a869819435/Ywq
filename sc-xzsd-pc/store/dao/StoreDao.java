@@ -16,47 +16,29 @@ import java.util.List;
 public interface StoreDao {
 
     /**
-     * 统计用户编号
-     * @param userId
-     * @return
-     */
-    int countUserId(@Param("userId") String userId);
-
-    /**
-     * 统计电话数量
-     * @param phone
-     * @param storeId
-     * @return
-     */
-    int countPhone(@Param("phone") String phone, @Param("storeId") String storeId);
-
-    /**
-     * 统计门店长编号数量
-     * @param userId
-     * @param storeId
-     * @return
-     */
-    int countManagerId(@Param("userId") String userId, @Param("storeId") String storeId);
-
-    /**
-     * 统计门店营业执照编号数量
-     * @param businessCode
-     * @param storeId
-     * @return
-     */
-    int countBusinessCode(@Param("businessCode") String businessCode, @Param("storeId") String storeId);
-
-    /**
      * 校验店长是否存在、电话是否已是别的店所用、用户是否已经是店长、营业执照是否已被使用
      * @param store
      * @return
+     * @Author ywq
+     * @Date 2020-04-12
      */
     int countStoreInfo(Store store);
+
+    /**
+     * 校验验证码是否存在
+     * @param inviteCode
+     * @return
+     * @Author ywq
+     * @Date 2020-04-12
+     */
+    int countInvite(String inviteCode);
 
     /**
      * 新增门店
      * @param store
      * @return
+     * @Author ywq
+     * @Date 2020-04-12
      */
     int addStore(Store store);
 
@@ -64,6 +46,8 @@ public interface StoreDao {
      * 获取门店详情
      * @param storeId
      * @return
+     * @Author ywq
+     * @Date 2020-04-12
      */
     Store getStore(@Param("storeId") String storeId);
 
@@ -73,6 +57,8 @@ public interface StoreDao {
      * @param userName
      * @param role
      * @return
+     * @Author ywq
+     * @Date 2020-04-12
      */
     List<Store> listStoreByPage(@Param("store") Store store,@Param("userName") String userName, @Param("role") String role);
 
@@ -80,6 +66,8 @@ public interface StoreDao {
      * 修改门店信息
      * @param store
      * @return
+     * @Author ywq
+     * @Date 2020-04-12
      */
     int updateStore(Store store);
 
@@ -87,6 +75,8 @@ public interface StoreDao {
      * 获取有订单的门店
      * @param listStoreId
      * @return
+     * @Author ywq
+     * @Date 2020-04-12
      */
     List<String> getHavingOrder(@Param("listStoreId") List<String> listStoreId);
 
@@ -95,8 +85,9 @@ public interface StoreDao {
      * @param listStoreId
      * @param updateUser
      * @return
+     * @Author ywq
+     * @Date 2020-04-12
      */
     int deleteStore(@Param("listStoreId") List<String> listStoreId, @Param("updateUser") String updateUser);
-
 }
 

@@ -29,7 +29,8 @@ public class TopOfColumnService {
         String userId = SecurityUtils.getCurrentUserId();
         TopOfColumn topOfColumn = topOfColumnDao.getTopOfColumn(userId);
         topOfColumn.setUserId(userId);
-        if( RoleEnums.DRIVER.getType().equals(topOfColumn.getRole()) || RoleEnums.CLIENT.getType().equals(topOfColumn.getRole())){
+        int nowRole = Integer.valueOf(topOfColumn.getRole());
+        if( nowRole >= Integer.valueOf(RoleEnums.DRIVER.getType()) ){
             return AppResponse.versionError("您的权限不足！");
         }
         return AppResponse.success("查询顶部栏信息成功！",topOfColumn);
